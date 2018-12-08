@@ -1,6 +1,7 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import models.Dificultad;
 import models.Ingredients;
 import models.Recipe;
 import models.RecipeIngredients;
@@ -32,26 +33,23 @@ public class RecipeController extends Controller {
 
     private static List<Recipe> listaRecetas = new ArrayList<Recipe>();
 
+    static String flagResponse = "";
+    static String flagBody = "";
+
+    static final String XML = "XML";
+    static final String JSON = "JSON";
 
     public Result retrieveRecipes() {
 
-        //Revisar cabeceras de cliente para ver que acepta
+        //Revisar cabeceras de cliente para ver que formato usa en el body y que acepta como respuesta
 
-        System.out.println("funcionando retrieveRecipes en RECIPE");
-
-        Http.Headers headers =
-                request().getHeaders();
+        chequeaCabeceraRequest(request());
 
 
-        Optional<String> s = headers.get("Content-Type");
-        System.out.println("s get--> " +s.get());
+        //TODO : procesar body segun Content-Type
 
-        System.out.println("content--> " + headers.get("Content-Type"));
 
-        System.out.println(s.get().equals("application/xml"));
-        System.out.println(s.get().equals("application/json"));
-
-        if(s.get().equals("application/xml")){
+        if(flagResponse.equals(XML)){
 
             System.out.println("type xml");
             fakeReceta(); //codigo de prueba que genera recetas
@@ -59,7 +57,7 @@ public class RecipeController extends Controller {
         }
         else{
 
-            if(s.get().equals("application/json")){
+            if(flagResponse.equals(JSON)){
 
                 System.out.println("type json");
                 fakeReceta(); //codigo de prueba que genera recetas
@@ -83,6 +81,58 @@ public class RecipeController extends Controller {
         System.out.println("funcionando createRecipe en RECIPE");
         return ok();
     }
+
+
+    public static void chequeaCabeceraRequest(Http.Request req){
+
+
+        System.out.println("funcionando retrieveRecipes en RECIPE");
+
+    if(req!=null){
+
+
+        Optional<String> sContent = req.getHeaders().get("Content-Type");
+        Optional<String> sAccept = req.getHeaders().get("Accept");
+
+
+
+        if(sContent.isPresent()){
+            if(sContent.get().equals("application/xml")){
+
+                flagBody = XML;
+            }
+            else{
+
+                if(sContent.get().equals("application/json")){
+
+                    flagBody = JSON;
+
+                }
+            }
+        }
+
+        if(sAccept.isPresent()){
+            if(sAccept.get().equals("application/xml")){
+                if(sAccept.get().equals("application/xml")){
+
+                    flagResponse = XML;
+                }
+                else{
+
+                    if(sAccept.get().equals("application/json")){
+
+                        flagResponse = JSON;
+
+                    }
+                }
+            }
+        }
+
+    }
+
+    }
+
+
 
     public static void fakeReceta(){
 
@@ -110,7 +160,13 @@ public class RecipeController extends Controller {
             }
 
             receta.setIngredientes(listaIngredientes);
-            receta.setDificultad(i);
+
+            Dificultad dificultad = new Dificultad();
+            dificultad.setDescripcion("DIFICIL");
+
+            dificultad.save();
+
+            receta.setDificultad(dificultad.getIdDificultad());
             receta.setNombre("recetaFake-"+i);
 
 

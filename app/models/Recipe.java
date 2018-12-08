@@ -3,10 +3,7 @@ package models;
 
 import io.ebean.Model;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +17,9 @@ public class Recipe extends Model {
 
 
     private String nombre;
-    private int dificultad;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private Long dificultad;
 
 
     private List<Ingredients> ingredientes ;
@@ -49,11 +48,11 @@ public class Recipe extends Model {
         this.nombre = nombre;
     }
 
-    public int getDificultad() {
+    public Long getDificultad() {
         return dificultad;
     }
 
-    public void setDificultad(int dificultad) {
+    public void setDificultad(Long dificultad) {
         this.dificultad = dificultad;
     }
 

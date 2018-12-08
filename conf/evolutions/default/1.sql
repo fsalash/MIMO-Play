@@ -3,6 +3,12 @@
 
 # --- !Ups
 
+create table dificultad (
+  id_dificultad                 bigint auto_increment not null,
+  descripcion                   varchar(255),
+  constraint pk_dificultad primary key (id_dificultad)
+);
+
 create table ingredients (
   id_ingrediente                bigint auto_increment not null,
   nombre                        varchar(255),
@@ -12,7 +18,7 @@ create table ingredients (
 create table recipe (
   id_receta                     bigint auto_increment not null,
   nombre                        varchar(255),
-  dificultad                    integer not null,
+  dificultad                    bigint,
   constraint pk_recipe primary key (id_receta)
 );
 
@@ -26,6 +32,8 @@ create table recipe_ingredients (
 
 
 # --- !Downs
+
+drop table if exists dificultad;
 
 drop table if exists ingredients;
 

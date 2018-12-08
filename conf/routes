@@ -10,3 +10,7 @@ PUT     /recipe/:receta             controllers.RecipeController.createRecipe(re
 
 
 
+#Ingredientes
+
+# Dar de alta un ingrediente (body en formato JSON)
+PUT     /ingredient/:ingre             controllers.IngredientController.createIngredient(ingre:String)
