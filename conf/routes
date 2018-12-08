@@ -1,0 +1,12 @@
+# .- Listar recetas
+GET     /recipes                    controllers.RecipeController.retrieveRecipes
+
+# Dar de alta una receta
+PUT     /recipe/:receta             controllers.RecipeController.createRecipe(receta:String)
+
+#* .- Modificar receta
+
+#* .- Borrar receta
+
+
+

@@ -1,0 +1,9 @@
+@(listaRecetas:List[Recipe])
+        <?xml version="1.0" encoding="UTF-8">
+<recetas>
+    @for(rec<-listaRecetas){
+    <receta>
+        <nombre>  @rec.getNombre()</nombre>
+    </receta>
+    }
+</recetas>
