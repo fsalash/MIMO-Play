@@ -4,6 +4,7 @@
     @for(rec<-listaRecetas){
     <receta>
         <nombre>  @rec.getNombre()</nombre>
+        <dificultad>  @rec.getDificultad()</dificultad>
     </receta>
     }
 </recetas>
