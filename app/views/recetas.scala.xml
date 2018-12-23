@@ -4,7 +4,26 @@
     @for(rec<-listaRecetas){
     <receta>
         <nombre>  @rec.getNombre()</nombre>
-        <dificultad>  @rec.getDificultad()</dificultad>
+        <ingredientes>
+            @for(ing<-rec.getIngredientes()){
+                <ingrediente>
+                    @ing.getNombre()
+                </ingrediente>
+                <cantidad>
+                    @ing.getCantidad()
+                </cantidad>
+            }
+        </ingredientes>
+
+        <autor>
+            <nombre>@rec.getAutor().getNombre()</nombre>
+            <apellidos>@rec.getAutor().getApellidos()</apellidos>
+            <nacionalidad>@rec.getAutor().getNacionalidad()</nacionalidad>
+        </autor>
+
+        <posicion>  @rec.getPosicion().getIdPosicion()</posicion>
+        <complejidad>  @rec.getPosicion().getComplejidad()</complejidad>
+        <pasos>@rec.getExplicacion()</pasos>
     </receta>
     }
 </recetas>

@@ -1,11 +1,14 @@
 package models;
 
+import io.ebean.ExpressionList;
+import io.ebean.Finder;
 import io.ebean.Model;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import java.util.List;
 
 
 @Entity
@@ -27,35 +30,54 @@ public class RecipeIngredients  extends Model {
     private Integer cantidad; //en gramos
 
 
+
+    public static final Finder<Long,RecipeIngredients> find = new Finder<>(RecipeIngredients.class);
+
+    public static List<RecipeIngredients> findIngredientsByIdRecipe (Long idReceta){
+
+        ExpressionList<RecipeIngredients> query = find.query().where().eq("idReceta",idReceta);
+        List<RecipeIngredients> ingredientes = query.findList();
+
+        return ingredientes;
+    }
+
     public Long getId() {
+
         return id;
     }
 
     public void setId(Long id) {
+
         this.id = id;
     }
 
     public Long getIdReceta() {
+
         return idReceta;
     }
 
     public void setIdReceta(Long idReceta) {
+
         this.idReceta = idReceta;
     }
 
     public Long getIdIngrediente() {
+
         return idIngrediente;
     }
 
     public void setIdIngrediente(Long idIngrediente) {
+
         this.idIngrediente = idIngrediente;
     }
 
     public Integer getCantidad() {
+
         return cantidad;
     }
 
     public void setCantidad(Integer cantidad) {
+
         this.cantidad = cantidad;
     }
 }

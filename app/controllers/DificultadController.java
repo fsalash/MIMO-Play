@@ -2,35 +2,29 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import models.Ingredients;
-import org.w3c.dom.Document;
-import play.libs.Json;
+import play.data.Form;
+import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Results;
 
+import javax.inject.Inject;
 import java.util.Optional;
 
-
-import play.data.Form;
-
-import play.data.FormFactory;
-
-import javax.inject.Inject;
-
 /**
- * Controlador general para el API de ingrediente
+ * Controlador general para el API de dificultades
  *
  * Expone metodos para:
  *
- * .- Listar ingredientes
- * .- Dar de alta un ingrediente
- * .- Modificar ingrediente
- * .- Borrar ingrediente
+ * .- Listar dificultades
+ * .- Dar de alta una dificultad
+ * .- Modificar dificultad
+ * .- Borrar dificultad
  *
  */
 
-public class IngredientController extends Controller {
+public class DificultadController extends Controller {
 
 
 

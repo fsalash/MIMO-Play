@@ -2,15 +2,13 @@
 GET     /recipes                    controllers.RecipeController.retrieveRecipes
 
 # Dar de alta una receta
-PUT     /recipe/:receta             controllers.RecipeController.createRecipe(receta:String)
-
-#* .- Modificar receta
+POST     /recipe             controllers.RecipeController.createRecipe
 
 #* .- Borrar receta
-
+DELETE /recipe/:id          controllers.RecipeController.deleteRecipe(id:Integer)
 
 
 #Ingredientes
 
 # Dar de alta un ingrediente (body en formato JSON)
-PUT     /ingredient/:ingre             controllers.IngredientController.createIngredient(ingre:String)
+POST     /ingredient/:ingre             controllers.IngredientController.createIngredient(ingre:String)

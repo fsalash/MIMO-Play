@@ -1,0 +1,25 @@
+@(receta:Recipe)
+        <?xml version="1.0" encoding="UTF-8">
+    <recipe>
+        <nombre>  @receta.getNombre()</nombre>
+        <ingredientes>
+            @for(ing<-receta.getIngredientes()){
+                <ingrediente>
+                    @ing.getNombre()
+                </ingrediente>
+                <cantidad>
+                    @ing.getCantidad()
+                </cantidad>
+            }
+        </ingredientes>
+
+        <autor>
+            <nombre>@receta.getAutor().getNombre()</nombre>
+            <apellidos>@receta.getAutor().getApellidos()</apellidos>
+            <nacionalidad>@receta.getAutor().getNacionalidad()</nacionalidad>
+        </autor>
+
+        <posicion>  @receta.getPosicion().getIdPosicion()</posicion>
+        <complejidad>  @receta.getPosicion().getComplejidad()</complejidad>
+        <pasos>@receta.getExplicacion()</pasos>
+    </recipe>
