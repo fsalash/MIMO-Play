@@ -12,9 +12,10 @@ create table autor (
 );
 
 create table ingredients (
-  id_ingrediente                bigint auto_increment not null,
+  id                            bigint auto_increment not null,
+  id_ingrediente                bigint,
   nombre                        varchar(255),
-  constraint pk_ingredients primary key (id_ingrediente)
+  constraint pk_ingredients primary key (id)
 );
 
 create table posicion (
@@ -24,13 +25,14 @@ create table posicion (
 );
 
 create table recipe (
-  id_receta                     bigint auto_increment not null,
+  id                            bigint auto_increment not null,
+  id_receta                     bigint,
   nombre                        varchar(255),
   posicion_id_posicion          bigint,
   explicacion                   varchar(255),
   autor_id                      bigint,
   constraint uq_recipe_posicion_id_posicion unique (posicion_id_posicion),
-  constraint pk_recipe primary key (id_receta)
+  constraint pk_recipe primary key (id)
 );
 
 create table recipe_ingredients (
