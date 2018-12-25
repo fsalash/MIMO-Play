@@ -120,9 +120,6 @@ public class RecipeController extends Controller {
                 int flag = procesaPosicion(receta);
 
                 //2.-
-                procesaIngredientes(receta);
-
-                //3.-
                 procesaAutor(receta);
 
                 if (flag<0 || flagErrorValidacion){
@@ -130,6 +127,9 @@ public class RecipeController extends Controller {
                 }
 
                 receta.save(); //almaceno la nueva receta porque todo ha ido bien
+
+                //3.-
+                procesaIngredientes(receta);
 
                 switch (flagResponse){ //revisamos como acepta la respuesta el cliente
 
@@ -259,7 +259,7 @@ public class RecipeController extends Controller {
             Recipe receta = new Recipe();
 
            receta.setIdReceta(recetaBBDD.getIdReceta());
-           receta.setId(recetaBBDD.getId());
+           //receta.setId(recetaBBDD.getId());
            receta.setNombre(recetaBBDD.getNombre());
 
 
@@ -352,6 +352,7 @@ public class RecipeController extends Controller {
 
 
             recipeIngredients.setCantidad(ingrediente.getCantidad());//esto siempre lo cojo de la request porque para cada receta la cantidad podria ser diferente
+
             recipeIngredients.setIdReceta(receta.getIdReceta()); //guardo relacion con receta antes de persistir relacion receta-cliente (N-M)
 
             recipeIngredients.save();//guardo relacion n-m recetas con ingredientes

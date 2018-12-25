@@ -3,7 +3,7 @@
 <recetas>
     @for(rec<-listaRecetas){
     <receta>
-        <id_receta>@rec.getId()</id_receta>
+        <id_receta>@rec.getIdReceta()</id_receta>
         <nombre>  @rec.getNombre()</nombre>
         <ingredientes>
             @for(ing<-rec.getIngredientes()){

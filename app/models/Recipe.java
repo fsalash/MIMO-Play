@@ -15,8 +15,6 @@ public class Recipe extends Model {
 
 
     @Id
-    private Long id;
-
     @ManyToMany(cascade = CascadeType.ALL)
     private Long idReceta;
 
@@ -47,7 +45,7 @@ public class Recipe extends Model {
     public static Recipe findRecipeById (Integer id){
 
         //ExpressionList<Recipe> query = find.query().where().eq("idReceta",id);
-        ExpressionList<Recipe> query = find.query().where().eq("id",id);
+        ExpressionList<Recipe> query = find.query().where().eq("idReceta",id);
         Recipe receta = query.findOne();
 
         return receta;
@@ -76,13 +74,6 @@ public class Recipe extends Model {
 
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getNombre() {
 

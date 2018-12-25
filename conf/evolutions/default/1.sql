@@ -19,19 +19,19 @@ create table ingredients (
 
 create table posicion (
   id_posicion                   bigint auto_increment not null,
+  desc_posicion                 varchar(255),
   constraint pk_posicion primary key (id_posicion)
 );
 
 create table recipe (
-  id                            bigint auto_increment not null,
-  id_receta                     bigint,
+  id_receta                     bigint auto_increment not null,
   nombre                        varchar(255),
   posicion_id_posicion          bigint,
   explicacion                   varchar(255),
   autor_id                      bigint,
   complejidad                   varchar(255),
   constraint uq_recipe_posicion_id_posicion unique (posicion_id_posicion),
-  constraint pk_recipe primary key (id)
+  constraint pk_recipe primary key (id_receta)
 );
 
 create table recipe_ingredients (
