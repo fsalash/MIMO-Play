@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 
 /**
@@ -96,7 +97,8 @@ public class RecipeController extends Controller {
 
         try{
 
-            Recipe receta = form.get(); //"bindo" el formulario de entrada a un objeto receta
+            Recipe receta  = new Recipe();
+            receta = form.get(); //"bindo" el formulario de entrada a un objeto receta
 
 
 
@@ -114,13 +116,8 @@ public class RecipeController extends Controller {
 
             if(recipeByName==null){
 
-                System.out.println("almacenado registro receta en bbdd");// si llegamos aqui es que todas las validaciones de required se han pasado y podriamos guardar ya la receta
                 //1.-
                 int flag = procesaPosicion(receta);
-
-                if (flag<0){
-                    return ok(views.html.posicionRepe.render()); //salimos porque la posicion donde se quiere guardar la receta está ocupada
-                }
 
                 //2.-
                 procesaIngredientes(receta);
@@ -128,28 +125,32 @@ public class RecipeController extends Controller {
                 //3.-
                 procesaAutor(receta);
 
+                if (flag<0 || flagErrorValidacion){
+                    return ok(views.html.posicionRepe.render()); //salimos porque la posicion donde se quiere guardar la receta está ocupada o porque hay un error de validacion en autor o posicion (controlado por el bind pero por si acaso)
+                }
+
                 receta.save(); //almaceno la nueva receta porque todo ha ido bien
 
-                switch (flagResponse){
+                switch (flagResponse){ //revisamos como acepta la respuesta el cliente
 
                     case XML:
-                        return ok(views.xml.receta.render(receta));
+                        return ok(views.xml.receta.render(receta)); //devolvemos info de receta en xml
 
                     case JSON:
                         JsonNode jsonNode = request().body().asJson();
                         System.out.println("doc jsonNode body: " + jsonNode.toString());
                         System.out.println(jsonNode);
-                        return ok(jsonNode);
+                        return ok(jsonNode);//devolvemos info de receta en json
 
                     default:
-                        return Results.badRequest();
+                        return Results.badRequest();//en otro caso devolvemos error en request
 
                 }
 
             }
 
             else{
-                return ok(views.html.recetaRepe.render());
+                return ok(views.html.recetaRepe.render()); //ya existe una receta guardada en bbdd con el mismo nombre
             }
 
 
@@ -171,20 +172,69 @@ public class RecipeController extends Controller {
 
         Recipe recipeById = Recipe.findRecipeById(id);
         if(recipeById!=null){
+            System.out.println("Borrado correcto: " + recipeById.getIdReceta() + " // " + recipeById.getNombre());
+            borraRelacionIngredientesReceta(id);
             recipeById.delete();
-            return ok();
+            return ok(views.html.recetaBorrada.render(recipeById));
         }
         else{
             System.out.println("no se ha encontrado el id de receta: " + id);
-            return notFound();
+            return ok(views.html.recetaNoEncontrada.render(id));
         }
 
     }
 
 
+    /**
+     * Actualizacion del nombre de receta por id
+     * @param id, nuevo nombre de la receta
+     * @return Json/xml con el resultado de la operacion
+     */
+    public Result updateRecipe (Integer id, String newRecipeName){
+
+        Recipe recipeById = Recipe.findRecipeById(id);
+
+        if(recipeById!=null){
+
+            recipeById.setNombre(newRecipeName);
+            recipeById.update();
+            System.out.println("Update correcto:  " + recipeById.getNombre());
+            return ok(views.html.recetaActualizada.render(recipeById));
+
+        }
+        else{
+
+            System.out.println("Imposible actualizar - NO se ha encontrado la receta con id: " + id);
+            return ok(views.html.recetaNoEncontrada.render(id));
+        }
+
+
+    }
     //**********************************************************
     //////UTILIDADES PARA EL MANEJO y PROCESAMIENTO DE LA ENTRADA//////////////
     //**********************************************************
+
+
+    /**
+     *
+     *
+     *
+     */
+    private void borraRelacionIngredientesReceta(Integer idReceta){
+
+        List<RecipeIngredients> ingredientsByIdRecipe = RecipeIngredients.findIngredientsByIdRecipe(new Long(idReceta));
+
+
+        for(RecipeIngredients ingRec:ingredientsByIdRecipe){
+
+            System.out.println("borrando relacion receta: " + idReceta + " con ingrediente: " + ingRec.getIdIngrediente());
+            ingRec.delete();//borro relacion por si luego el id de la receta eliminada se reutiliza
+        }
+
+    }
+
+
+
 
     /**
      * Metodo que se encarga de buscar los ingredientes para cada receta con la relacion n-m que exista asi como su cantidad,
@@ -201,27 +251,32 @@ public class RecipeController extends Controller {
 
         for(int i=0;i<listaRecetas.size();i++){
 
+            List<RecipeIngredients> ingredientsByIdRecipe = new ArrayList<RecipeIngredients>();
+            Posicion posicion = new Posicion();
+            Autor autor = new Autor();
+
             Recipe recetaBBDD = listaRecetas.get(i);
             Recipe receta = new Recipe();
 
            receta.setIdReceta(recetaBBDD.getIdReceta());
+           receta.setId(recetaBBDD.getId());
            receta.setNombre(recetaBBDD.getNombre());
 
 
             //ingredientes
-            List<RecipeIngredients> ingredientsByIdRecipe = RecipeIngredients.findIngredientsByIdRecipe(recetaBBDD.getIdReceta());
+            ingredientsByIdRecipe = RecipeIngredients.findIngredientsByIdRecipe(recetaBBDD.getIdReceta());
             List<Ingredients> ingredientes = procesaRelacionIngredientesReceta(ingredientsByIdRecipe);
             receta.setIngredientes(ingredientes);
 
 
             //Posicion
-            Posicion posicion = Posicion.findDificultByIdPos(recetaBBDD.getPosicion().getIdPosicion());
+            posicion = Posicion.findDificultByIdPos(recetaBBDD.getPosicion().getIdPosicion());
             receta.setPosicion(posicion);
 
 
             //autor
-           Autor autor = Autor.findAuthorByIDReceta(recetaBBDD.getAutor().getId());
-           receta.setAutor(autor);
+            autor = Autor.findAuthorByIDReceta(recetaBBDD.getAutor().getId());
+            receta.setAutor(autor);
 
 
             listaAux.add(receta);
@@ -250,11 +305,11 @@ public class RecipeController extends Controller {
 
             //obtengo nombre e id de la tabla "maestra" de ingredientes (relacion n-m)
             ingrediente.setNombre(ingredientById.getNombre());
-            //ingrediente.setIdIngrediente(ingredientById.getIdIngrediente());
 
             //obtengo cantidad de la tabla "auxiliar" n-m que almacena la cantidad de gramos de cada ingrediente para cada receta
             ingrediente.setCantidad(recIng.getCantidad());
 
+            ingrediente.setIdIngrediente(recIng.getIdIngrediente());
             listaIngredientesADevolver.add(ingrediente);
         }
 
@@ -268,10 +323,9 @@ public class RecipeController extends Controller {
      */
     private void procesaIngredientes(Recipe receta) {
 
-        List<Ingredients> ingredientes = receta.getIngredientes();
         //recorremos los posibles ingredientes que hubieran pasado en la llamada
+        List<Ingredients> ingredientes = receta.getIngredientes();
 
-        //List<Ingredients> auxIng = new ArrayList<Ingredients>();
 
         for(int i=0;i<ingredientes.size();i++){
 
@@ -333,7 +387,7 @@ public class RecipeController extends Controller {
         }
         else{
 
-            //TODO : mostrar error de validacion de valor obligatorio para la receta
+            //nunca deberiamos llegar aqui porque el bindado automatico habría lanzado excepcion al principio pero marcamos flag por si ocurriera algo inesperado
             flagErrorValidacion = true;
         }
 
@@ -368,7 +422,7 @@ public class RecipeController extends Controller {
 
         else{
 
-            //TODO : mostrar error de validacion de valor obligatorio para la receta
+            //nunca deberiamos llegar aqui porque el bindado automatico habría lanzado excepcion al principio pero marcamos flag por si ocurriera algo inesperado
             flagErrorValidacion = true;
         }
 
@@ -466,7 +520,11 @@ public class RecipeController extends Controller {
             receta.setIngredientes(listaIngredientes);
 
             Posicion posicion = new Posicion();
-            posicion.setComplejidad("DIFICIL");
+            Random rand = new Random();
+
+            int n = rand.nextInt(5000) + 1;
+            posicion.setIdPosicion(new Long(n));
+            receta.setComplejidad("DIFICIL");
 
             posicion.save();
 
@@ -487,7 +545,7 @@ public class RecipeController extends Controller {
 
                 System.out.println("creando relacion receta: " + i + " con ingrediente : " + k);
 
-                recIng.setIdIngrediente(ingrediente.getId());
+                recIng.setIdIngrediente(ingrediente.getIdIngrediente());
                 recIng.setIdReceta(receta.getIdReceta());
                 recIng.setCantidad(i);
                 recIng.save();

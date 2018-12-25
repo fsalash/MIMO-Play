@@ -13,8 +13,7 @@ import javax.persistence.*;
 public class Ingredients  extends Model {
 
     @Id
-    private Long id;
-
+  //  private Long id;
     @ManyToMany(cascade = CascadeType.ALL)
     private Long idIngrediente;
 
@@ -47,16 +46,6 @@ public class Ingredients  extends Model {
         return ingrediente;
     }
 
-
-    public Long getId() {
-
-        return id;
-    }
-
-    public void setId(Long id) {
-
-        this.id = id;
-    }
 
     public String getNombre() {
 

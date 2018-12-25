@@ -14,10 +14,8 @@ public class Posicion extends Model {
 
     @Id
     @OneToOne(mappedBy="posicion")
-    private Long idPosicion;//pagina del recetario. En una pagina una receta y solo una
+    private Long idPosicion;//pagina del recetario. En una pagina una receta y solo una. Un poco forzada pero queria representar una relacion uno a uno sin usar un campo extra en un tabla :-)
 
-    @Required
-    private String complejidad;
 
 
     public static final Finder<Long, Posicion> find = new Finder<>(Posicion.class);
@@ -40,13 +38,5 @@ public class Posicion extends Model {
         this.idPosicion = idPos;
     }
 
-    public String getComplejidad() {
 
-        return complejidad;
-    }
-
-    public void setComplejidad(String complejidad) {
-
-        this.complejidad = complejidad;
-    }
 }

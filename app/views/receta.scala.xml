@@ -20,6 +20,6 @@
         </autor>
 
         <posicion>  @receta.getPosicion().getIdPosicion()</posicion>
-        <complejidad>  @receta.getPosicion().getComplejidad()</complejidad>
+        <complejidad>  @receta.getComplejidad()</complejidad>
         <pasos>@receta.getExplicacion()</pasos>
     </recipe>
