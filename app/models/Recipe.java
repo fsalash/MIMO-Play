@@ -44,7 +44,6 @@ public class Recipe extends Model {
 
     public static Recipe findRecipeById (Integer id){
 
-        //ExpressionList<Recipe> query = find.query().where().eq("idReceta",id);
         ExpressionList<Recipe> query = find.query().where().eq("idReceta",id);
         Recipe receta = query.findOne();
 

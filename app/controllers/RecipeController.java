@@ -43,7 +43,7 @@ public class RecipeController extends Controller {
     static String flagResponse = JSON;
     static String flagBody = JSON;
 
-    boolean flagErrorValidacion = false;
+    int flagErrorValidacion = 0; // 0 - todo ok, 1- error de tipo en parametro
 
     /**
      * Metodo que consulta en bbdd las recetas creadas y devuelve informacion en json o xml segun Accept del header de la invocacion (json por defecto)
@@ -111,6 +111,37 @@ public class RecipeController extends Controller {
                 Por esto lo primera es usar finders para ver si en bbdd tenemos valores ya guardados
             */
 
+            validaDatosEntrada(receta);
+
+
+            switch (flagErrorValidacion){ //son validaciones manuales que nunca deberian saltar porque el "bind" del request es inteligente
+
+                case -1:
+                    JsonNode nodoRespuesta1 = Json.toJson("Longitud nombre autor excesiva " + receta.getAutor());
+                    return badRequest(nodoRespuesta1);
+                case 2:
+                    JsonNode nodoRespuesta2 = Json.toJson("Nombre de ingrediente y autor muy largo" + receta.getIngredientes() + receta.getAutor());
+                    return badRequest(nodoRespuesta2);
+                case 3:
+                    JsonNode nodoRespuesta3 = Json.toJson("Nombre de ingrediente muy largo" + receta.getAutor());
+                    return badRequest(nodoRespuesta3);
+                case 4:
+                    JsonNode nodoRespuesta4 = Json.toJson("Nombre de autor muy largo y posicion > 1000" + receta.getAutor() + receta.getPosicion());
+                    return badRequest(nodoRespuesta4);
+                case 5 : //
+                    JsonNode nodoRespuesta5 = Json.toJson("Posicion > 1000 no valida " + receta.getPosicion());
+                    return badRequest(nodoRespuesta5);
+                case 7 : //
+                    JsonNode nodoRespuesta7 = Json.toJson("Posicion > 1000, nombre de autor y de ingredientes muy largos " + receta.getAutor() + receta.getPosicion() + receta.getIngredientes() );
+                    return badRequest(nodoRespuesta7);
+                case 8 : //
+                    JsonNode nodoRespuesta8 = Json.toJson("Posicion > 1000 y nombre de ingrediente muy largo " + receta.getPosicion() + receta.getPosicion());
+                    return badRequest(nodoRespuesta8);
+
+
+            }
+
+
 
             Recipe recipeByName = Recipe.findRecipeByName(receta.getNombre());
 
@@ -122,9 +153,6 @@ public class RecipeController extends Controller {
                 //2.-
                 procesaAutor(receta);
 
-                if (flag<0 || flagErrorValidacion){
-                    return ok(views.html.posicionRepe.render()); //salimos porque la posicion donde se quiere guardar la receta está ocupada o porque hay un error de validacion en autor o posicion (controlado por el bind pero por si acaso)
-                }
 
                 receta.save(); //almaceno la nueva receta porque todo ha ido bien
 
@@ -216,9 +244,45 @@ public class RecipeController extends Controller {
 
 
     /**
+     * Metodo de validacion generico para controlar longitudes excesivas de campos de autor, valor de posicion (no admitimos mas de 1000 "paginas/posiciones" en nuestro recetario), nombre de ingrediente muy largo...
      *
-     *
-     *
+     * @param: receta de entrada
+     *  No devuelve nada porque trabajamos con una variable global
+     */
+
+    private void validaDatosEntrada(Recipe receta){
+
+        flagErrorValidacion = 0;
+
+
+        //validacion del autor
+        if(receta.getAutor()!=null && receta.getAutor().getNombre() != null && receta.getAutor().getApellidos()!=null && (receta.getAutor().getNombre().length()>30 || receta.getAutor().getApellidos().length()> 30)) {
+            flagErrorValidacion = flagErrorValidacion -1 ;
+        }
+
+
+        // validacion ingredientes
+        List<Ingredients> ingredientes = receta.getIngredientes();
+        for(Ingredients ingredient : ingredientes){
+            if (ingredient.getNombre().length()>25) {
+                flagErrorValidacion = flagErrorValidacion + 3;
+                break; //con encontrar uno me vale para salir
+            }
+        }
+
+
+        ///posicion
+        if (receta.getPosicion() !=null && receta.getPosicion().getIdPosicion() != null && receta.getPosicion().getIdPosicion().intValue()>1000){
+            flagErrorValidacion = flagErrorValidacion + 5;
+        }
+
+
+    }
+
+    /**
+     * Metodo que borra las relaciones n-m guardadas entre idRecete e ingredientes
+     * Al borrar una receta si no eliminamos la relacion entre idReceta e idIngrediente es posible que al crear otra receta el id se "aproveche" y tengamos lios :-)
+     * @param: Recibe el id de la receta en cuestion
      */
     private void borraRelacionIngredientesReceta(Integer idReceta){
 
@@ -241,6 +305,7 @@ public class RecipeController extends Controller {
      * buscar el autor de la receta para cada receta con la relacion 1-n que exista y
      * se encarga de buscar la dificultad para cada receta con la relacion 1-1 que exista
      *
+     * @param: Recibe una lista de recetas
      * @return Lista de recetas de bbdd
      */
     private List<Recipe>  buscaInfoRecetas(List<Recipe> listaRecetas){
@@ -259,7 +324,6 @@ public class RecipeController extends Controller {
             Recipe receta = new Recipe();
 
            receta.setIdReceta(recetaBBDD.getIdReceta());
-           //receta.setId(recetaBBDD.getId());
            receta.setNombre(recetaBBDD.getNombre());
 
 
@@ -287,7 +351,7 @@ public class RecipeController extends Controller {
     }
 
     /**
-     *
+     *  Metodo que procesa los ingredientes de la invocacion y los asocia a la receta validando previamente en bbdd para no repetir ingredientes
      * @param ingredientsByIdRecipe
      * @return Lista de relacion de ingredientes usados en una receta
      */
@@ -318,7 +382,7 @@ public class RecipeController extends Controller {
 
 
     /**
-     * Metodo que procesa la entrada por POST para dar de alta los ingredientes de una receta (si ya existia se guarda relacion)
+     * Metodo que procesa la entrada por POST para dar de alta los ingredientes de una receta validando si ya existian (el id del ingrediente guardado es el que se usara para la relacion entre receta-ingrediente-cantidad)
      * @param receta
      */
     private void procesaIngredientes(Recipe receta) {
@@ -344,9 +408,9 @@ public class RecipeController extends Controller {
             }
             else{
                 //el ingrediente no existia en bbdd de ejecuciones anteriores y lo almaceno como ingrediente nuevo
+
                 ingrediente.save();
                 recipeIngredients.setIdIngrediente(ingrediente.getIdIngrediente());
-
 
             }
 
@@ -363,7 +427,7 @@ public class RecipeController extends Controller {
 
 
     /**
-     * Metodo que procesa la entrada por POST para dar de alta el autor de una receta (si ya existia se guarda relacion)
+     * Metodo que procesa la entrada por POST para dar de alta el autor de una receta validando si ya existia en bbdd previamente
      * @param receta
      */
     private void procesaAutor(Recipe receta){
@@ -371,31 +435,25 @@ public class RecipeController extends Controller {
         Autor autor= receta.getAutor(); //Una receta tiene un autor y un autor varias receatas 1-n
 
 
-        if(autor!=null && autor.getNombre() != null && autor.getApellidos()!=null){
+        Autor autorAlmacenado = Autor.findAuthorByNameAndSurname(autor.getNombre(), autor.getApellidos());
 
-            Autor autorAlmacenado = Autor.findAuthorByNameAndSurname(autor.getNombre(), autor.getApellidos());
+        if(autorAlmacenado !=null){
 
-            if(autorAlmacenado !=null){
-
-               receta.setAutor(autorAlmacenado);//guardamos relacion 1-n de autores con receta (una receta solo es de un autor, y un autor tiene n recetas
-            }
-            else{
-
-                autor.save();
-                receta.setAutor(autor); //idem guardamos la relacion entre autor nuevo y la receta creada
-            }
-
+           receta.setAutor(autorAlmacenado);//guardamos relacion 1-n de autores con receta (una receta solo es de un autor, y un autor tiene n recetas
         }
         else{
 
-            //nunca deberiamos llegar aqui porque el bindado automatico habría lanzado excepcion al principio pero marcamos flag por si ocurriera algo inesperado
-            flagErrorValidacion = true;
+            autor.save();
+            receta.setAutor(autor); //idem guardamos la relacion entre autor nuevo y la receta creada
         }
+
+
 
  }
 
     /**
-     * Metodo que procesa la entrada por POST para dar de alta la dificultad de una receta (si ya existia se guarda relacion)
+     * Metodo que procesa la entrada por POST para dar de alta la posicion de una receta validando si ya existe una receta en una posicion del recetario
+     * (es un "poco" forzada esta relacion porque se podria hacer mas facil usando un campo en la tabla recipe, pero para completar el ejercicio creo una relacion OneToOne)
      * @param receta
      */
     private int procesaPosicion(Recipe receta){
@@ -403,29 +461,21 @@ public class RecipeController extends Controller {
         Posicion posicion = receta.getPosicion();
 
 
-        if (posicion !=null && posicion.getIdPosicion() != null){
+        Posicion difInBBDD = Posicion.findDificultByIdPos(posicion.getIdPosicion());
 
-            Posicion difInBBDD = Posicion.findDificultByIdPos(posicion.getIdPosicion());
+        if (difInBBDD!=null){
 
-            if (difInBBDD!=null){
-
-                //ya existe una receta en esa posicion. Violamos la relacion 1 a 1 y por tanto retornamos
-                return -1;
-            }
-            else{
-
-                posicion.setIdPosicion(posicion.getIdPosicion());
-                posicion.save();
-                receta.setPosicion(posicion);//guardamos relacion uno a uno entre posicion de nueva creacion y receta
-
-            }
+            //ya existe una receta en esa posicion. Violamos la relacion 1 a 1 y por tanto retornamos
+            return -1;
         }
-
         else{
 
-            //nunca deberiamos llegar aqui porque el bindado automatico habría lanzado excepcion al principio pero marcamos flag por si ocurriera algo inesperado
-            flagErrorValidacion = true;
+            posicion.setIdPosicion(posicion.getIdPosicion());
+            posicion.save();
+            receta.setPosicion(posicion);//guardamos relacion uno a uno entre posicion de nueva creacion y receta
+
         }
+
 
         return 0;
 
@@ -433,7 +483,8 @@ public class RecipeController extends Controller {
 
 
     /**
-     * Chequea el content-type y el formato de respuesta que soporta el cliente que invoca
+     * Chequea el content-type y el formato de respuesta que soporta el cliente que invoca. Me sirve para saber como me mandan la info y que
+     * soporte el cliente como respuesta.
      * @param req
      */
     public static void chequeaCabeceraRequest(Http.Request req){
@@ -491,7 +542,7 @@ public class RecipeController extends Controller {
 
 
     /**
-     * FAKE. Metodo para ir probando la construccion. Crea un recetario fake v0 (sin autor)
+     * FAKE. Metodo para ir probando la construccion. Crea un recetario fake v0 (sin autor). No valido para la valoracion del ejercicio :-)
      */
     public static void fakeReceta(){
 

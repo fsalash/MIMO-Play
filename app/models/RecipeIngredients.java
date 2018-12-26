@@ -27,7 +27,7 @@ public class RecipeIngredients  extends Model {
     private Long idIngrediente;
 
 
-    private Integer cantidad; //en gramos
+    private Integer cantidad; //en gramos por ejemplo
 
 
 
