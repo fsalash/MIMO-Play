@@ -1,0 +1,15 @@
+@(receta:Recipe)
+<recipe>
+    <nombre>  @receta.getNombre()</nombre>
+    <ingredientes>
+        @for(ing<-receta.getIngredientes()){
+           @_ingrediente(ing)
+        }
+    </ingredientes>
+
+    @_autor(receta.getAutor())
+
+    <posicion>  @receta.getPosicion().getIdPosicion()</posicion>
+    <complejidad>  @receta.getComplejidad()</complejidad>
+    <pasos>@receta.getExplicacion()</pasos>
+</recipe>

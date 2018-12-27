@@ -1,0 +1,5 @@
+@(ingrediente:Ingredients)
+<ingrediente>
+   <nombre> @ingrediente.getNombre()</nombre>
+    <cantidad>@ingrediente.getCantidad()</cantidad>
+</ingrediente>
