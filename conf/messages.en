@@ -1,0 +1,31 @@
+tituloApp = Recipe Virtual Book - Play Framework
+
+recetaYaUsada = Recipe´s Position already used
+recetaEnMismaPosicion = Another recipe was found at the same position
+recetaSoloUnaPorPosicion = Only one recipe per page is allowed
+recetaActualizada = Recipe updated
+laRecetaCon = The recipe with
+haPasadoA = has changed to
+tenerElNombre = has the name
+recetaBorrada = Recipe deleted
+haSidoBorradaDeBBDD = has been deleted from bbdd
+errorActualizacion = Update error
+noSeHaEncontradoReceta = No one recipe was found
+recetaRepetida = Recipe repited
+recetaConMismoNombre = Another recipe was found with the same name
+noDuplicadosNombre = Duplicity of recipes names is not allowed
+error = Error
+faltanValoresObligatorios = Some required values to create the recipe wasn´t be found
+recetaRequired = Recipe (name*, ingredients*, author* , position*)
+ingredientesRequired = Ingredientes (nombre*, cantidad*)
+autorRequired = Author (name*, surname*)
+posicionRequired = Position (idPosition*)
+complejidadRequired = Complexity (description*)
+
+case-1FlagValidacion = Author name exceeded maximum length
+case2FlagValidacion = Ingredient name and author exceeded maximum length
+case3FlagValidacion = Ingredient name exceeded maximum length
+case4FlagValidacion = Author name exceeded maximum length ans position value gt 1000
+case5FlagValidacion = Position gt 1000 not allowed
+case7FlagValidacion = Position gt 1000, author name and ingredients exceeded maximum length
+case8FlagValidacion = Position gt 1000 and ingredient name exceeded maximum length

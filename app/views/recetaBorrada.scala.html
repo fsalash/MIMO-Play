@@ -1,11 +1,11 @@
-@(recipeDeleted:Recipe)
+@(recipeDeleted:Recipe,messages: play.i18n.Messages)
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Receta borrada</title>
+    <title>@messages.at("recetaBorrada")</title>
 </head>
 <body>
-<h2>La receta con ID = @recipeDeleted.getIdReceta() - @recipeDeleted.getNombre()  ha sido borrada de bbdd a</h2>
+<h2>@messages.at("laRecetaConID") = @recipeDeleted.getIdReceta() - @recipeDeleted.getNombre()  @messages.at("haSidoBorradaDeBBDD") </h2>
 </body>
 </html>

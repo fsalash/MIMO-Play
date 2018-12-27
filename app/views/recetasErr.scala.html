@@ -1,19 +1,19 @@
-
+@(messages: play.i18n.Messages) 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Error</title>
+    <title>@messages.at("error")</title>
 </head>
 <body>
-<p>Faltan valores obligatorios para dar de alta la receta</p>
+<p>@messages.at("faltanValoresObligatorios")</p>
 
 <ol>
-    <li> Receta (nombre*, ingredientes*, autor* , posicion*)</li>
-        <li> Ingredientes (nombre*, cantidad*)</li>
-        <li> Autor (nombre*, apellidos*)</li>
-        <li> Posicion (idPosicion*)</li>
-        <li> Complejidad (descripcion*)</li>
+    <li> @messages.at("recetaRequired") </li>
+    <li> @messages.at("ingredientesRequired") </li>
+    <li> @messages.at("autorRequired") </li>
+    <li> @messages.at("posicionRequired") </li>
+    <li> @messages.at("complejidadRequired") </li>
 </ol>
 </body>
 </html>

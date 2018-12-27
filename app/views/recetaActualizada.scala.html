@@ -1,12 +1,12 @@
-@(recipeUpdated:Recipe)
+@(recipeUpdated:Recipe,messages: play.i18n.Messages)
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Receta actualizada</title>
+    <title>@messages.at("recetaActualizada")</title>
 </head>
 <body>
-<h2>La receta con ID = @recipeUpdated.getIdReceta() ha pasado a</h2>
-<h1> tener el nombre @recipeUpdated.getNombre()</h1>
+<h2>@messages.at("laRecetaCon") ID = @recipeUpdated.getIdReceta() @messages.at("haPasadoA")</h2>
+<h1>@messages.at("tenerElNombre") @recipeUpdated.getNombre()</h1>
 </body>
 </html>

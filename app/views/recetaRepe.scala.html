@@ -1,11 +1,12 @@
+@(messages: play.i18n.Messages) 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Receta Repetida</title>
+    <title>@messages.at("recetaRepetida")</title>
 </head>
 <body>
-<h2>Se ha encontrado una receta con el mismo nombre</h2>
-<p>No se admiten duplicados de nombre</p>
+<h2>@messages.at("recetaConMismoNombre")</h2>
+<p>@messages.at("noDuplicadosNombre")</p>
 </body>
 </html>

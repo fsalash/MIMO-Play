@@ -1,11 +1,12 @@
+@(messages: play.i18n.Messages) 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Receta en posicion ya usada</title>
+    <title>@messages.at("tituloApp")</title>
 </head>
 <body>
-<h2>Se ha encontrado una receta en la misma posicion</h2>
-<p>Solo se admite una receta por pagina (posicion) </p>
+<h2>@messages.at("recetaEnMismaPosicion")</h2>
+<p>@messages.at("recetaSoloUnaPorPosicion")</p>
 </body>
 </html>

@@ -2,13 +2,16 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import models.*;
+import play.cache.SyncCacheApi;
 import play.data.Form;
 import play.data.FormFactory;
+import play.i18n.Messages;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Results;
+import views.xml.recetas;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -34,6 +37,9 @@ public class RecipeController extends Controller {
     @Inject
     FormFactory formFactory;
 
+    @Inject
+    private SyncCacheApi cache;
+
     private static List<Recipe> listaRecetas = new ArrayList<Recipe>();
 
     static final String XML = "XML";
@@ -43,7 +49,11 @@ public class RecipeController extends Controller {
     static String flagResponse = JSON;
     static String flagBody = JSON;
 
+    static String flagLang = "ES"; //por defecto en castellano
+
     int flagErrorValidacion = 0; // 0 - todo ok, 1- error de tipo en parametro
+
+    static Messages messages;
 
     /**
      * Metodo que consulta en bbdd las recetas creadas y devuelve informacion en json o xml segun Accept del header de la invocacion (json por defecto)
@@ -51,12 +61,27 @@ public class RecipeController extends Controller {
      */
     public Result retrieveRecipes() {
 
+        messages = Http.Context.current().messages();
+
         //Revisar cabeceras de cliente para ver que formato usa en el body y que acepta como respuesta
         chequeaCabeceraRequest(request());
 
 
         //buscamos todas las recetas en bbdd y sus relaciones con los ingredientes (todo en un paso)
-        listaRecetas = Recipe.findAllRecipes();
+
+        List<Recipe> listaEnCache = cache.get("listaRecetas");
+
+        if( listaEnCache != null){
+
+            listaRecetas =  listaEnCache;
+        }
+        else{
+
+            listaRecetas = Recipe.findAllRecipes();
+            cache.set("listaRecetas",listaRecetas);
+        }
+
+
         List<Recipe> listaRecetasCompleta  = buscaInfoRecetas(listaRecetas);
 
         System.out.println("Tamaño del recetario--> " + listaRecetasCompleta.size() + " recetas guardadas");
@@ -66,7 +91,7 @@ public class RecipeController extends Controller {
 
             System.out.println("type xml");
             //fakeReceta(); //codigo de prueba que genera recetas
-            return ok(views.xml.recetas.render(listaRecetasCompleta));
+            return ok(recetas.render(listaRecetasCompleta));
         }
         else{
 
@@ -89,7 +114,7 @@ public class RecipeController extends Controller {
      */
     public Result createRecipe (){
 
-        System.out.println("funcionando createRecipe en RECIPE");
+        messages = Http.Context.current().messages();
 
         chequeaCabeceraRequest(request());
 
@@ -117,25 +142,25 @@ public class RecipeController extends Controller {
             switch (flagErrorValidacion){ //son validaciones manuales que nunca deberian saltar porque el "bind" del request es inteligente
 
                 case -1:
-                    JsonNode nodoRespuesta1 = Json.toJson("Longitud nombre autor excesiva " + receta.getAutor());
+                    JsonNode nodoRespuesta1 = Json.toJson(messages.at("case-1FlagValidacion") + receta.getAutor());
                     return badRequest(nodoRespuesta1);
                 case 2:
-                    JsonNode nodoRespuesta2 = Json.toJson("Nombre de ingrediente y autor muy largo" + receta.getIngredientes() + receta.getAutor());
+                    JsonNode nodoRespuesta2 = Json.toJson(messages.at("case2FlagValidacion") + receta.getIngredientes() + receta.getAutor());
                     return badRequest(nodoRespuesta2);
                 case 3:
-                    JsonNode nodoRespuesta3 = Json.toJson("Nombre de ingrediente muy largo" + receta.getAutor());
+                    JsonNode nodoRespuesta3 = Json.toJson(messages.at("case3FlagValidacion") + receta.getAutor());
                     return badRequest(nodoRespuesta3);
                 case 4:
-                    JsonNode nodoRespuesta4 = Json.toJson("Nombre de autor muy largo y posicion > 1000" + receta.getAutor() + receta.getPosicion());
+                    JsonNode nodoRespuesta4 = Json.toJson(messages.at("case4FlagValidacion") + receta.getAutor() + receta.getPosicion());
                     return badRequest(nodoRespuesta4);
                 case 5 : //
-                    JsonNode nodoRespuesta5 = Json.toJson("Posicion > 1000 no valida " + receta.getPosicion());
+                    JsonNode nodoRespuesta5 = Json.toJson(messages.at("case5FlagValidacion") + receta.getPosicion());
                     return badRequest(nodoRespuesta5);
                 case 7 : //
-                    JsonNode nodoRespuesta7 = Json.toJson("Posicion > 1000, nombre de autor y de ingredientes muy largos " + receta.getAutor() + receta.getPosicion() + receta.getIngredientes() );
+                    JsonNode nodoRespuesta7 = Json.toJson(messages.at("case7FlagValidacion") + receta.getAutor() + receta.getPosicion() + receta.getIngredientes() );
                     return badRequest(nodoRespuesta7);
                 case 8 : //
-                    JsonNode nodoRespuesta8 = Json.toJson("Posicion > 1000 y nombre de ingrediente muy largo " + receta.getPosicion() + receta.getPosicion());
+                    JsonNode nodoRespuesta8 = Json.toJson(messages.at("case8FlagValidacion") + receta.getPosicion() + receta.getPosicion());
                     return badRequest(nodoRespuesta8);
 
 
@@ -156,6 +181,7 @@ public class RecipeController extends Controller {
 
                 receta.save(); //almaceno la nueva receta porque todo ha ido bien
 
+                cache.remove("listaRecetas"); //ya no vale la cache para siguientes consultas asi que anulamos
                 //3.-
                 procesaIngredientes(receta);
 
@@ -178,7 +204,7 @@ public class RecipeController extends Controller {
             }
 
             else{
-                return ok(views.html.recetaRepe.render()); //ya existe una receta guardada en bbdd con el mismo nombre
+                return ok(views.html.recetaRepe.render(messages)); //ya existe una receta guardada en bbdd con el mismo nombre
             }
 
 
@@ -186,7 +212,7 @@ public class RecipeController extends Controller {
         }catch (IllegalStateException ex){
             System.out.println("error de bindado del formulario de entrada, es posible que campos required no estén siendo informados");
             ex.printStackTrace();
-            return badRequest(views.html.recetasErr.render());
+            return badRequest(views.html.recetasErr.render(messages));
         }
     }
 
@@ -198,16 +224,19 @@ public class RecipeController extends Controller {
      */
     public Result deleteRecipe(Integer id){
 
+        messages = Http.Context.current().messages();
+
         Recipe recipeById = Recipe.findRecipeById(id);
         if(recipeById!=null){
             System.out.println("Borrado correcto: " + recipeById.getIdReceta() + " // " + recipeById.getNombre());
             borraRelacionIngredientesReceta(id);
             recipeById.delete();
-            return ok(views.html.recetaBorrada.render(recipeById));
+            cache.remove("listaRecetas"); //ya no vale la cache para siguientes consultas asi que anulamos
+            return ok(views.html.recetaBorrada.render(recipeById,messages));
         }
         else{
             System.out.println("no se ha encontrado el id de receta: " + id);
-            return ok(views.html.recetaNoEncontrada.render(id));
+            return ok(views.html.recetaNoEncontrada.render(id,messages));
         }
 
     }
@@ -220,20 +249,23 @@ public class RecipeController extends Controller {
      */
     public Result updateRecipe (Integer id, String newRecipeName){
 
+        messages = Http.Context.current().messages();
+
         Recipe recipeById = Recipe.findRecipeById(id);
 
         if(recipeById!=null){
 
             recipeById.setNombre(newRecipeName);
             recipeById.update();
+            cache.remove("listaRecetas"); //ya no vale la cache para siguientes consultas asi que anulamos
             System.out.println("Update correcto:  " + recipeById.getNombre());
-            return ok(views.html.recetaActualizada.render(recipeById));
+            return ok(views.html.recetaActualizada.render(recipeById,messages));
 
         }
         else{
 
             System.out.println("Imposible actualizar - NO se ha encontrado la receta con id: " + id);
-            return ok(views.html.recetaNoEncontrada.render(id));
+            return ok(views.html.recetaNoEncontrada.render(id,messages));
         }
 
 
@@ -497,6 +529,8 @@ public class RecipeController extends Controller {
 
             Optional<String> sContent = req.getHeaders().get("Content-Type");
             Optional<String> sAccept = req.getHeaders().get("Accept");
+            Optional<String> sAcceptLang = req.getHeaders().get("Accept-Language");
+
 
 
             if(sContent.isPresent()){
@@ -532,6 +566,20 @@ public class RecipeController extends Controller {
                     }
             }
 
+            if(sAcceptLang.isPresent()){
+                if(sAcceptLang.get().toUpperCase().equals("ES")){
+
+                    flagLang = "ES";
+                }
+                else {
+
+                    if (sAccept.get().toUpperCase().equals("EN")) {
+
+                        flagLang = "EN";
+
+                    }
+                }
+            }
 
             System.out.println("content-type: " +flagBody);
             System.out.println("accept: " +flagResponse);
