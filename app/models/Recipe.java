@@ -42,7 +42,7 @@ public class Recipe extends Model {
 
     public static final Finder<Long,Recipe> find = new Finder<>(Recipe.class);
 
-    public static Recipe findRecipeById (Integer id){
+    public static Recipe findRecipeById (Long id){
 
         ExpressionList<Recipe> query = find.query().where().eq("idReceta",id);
         Recipe receta = query.findOne();

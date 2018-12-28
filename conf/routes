@@ -5,7 +5,7 @@ GET     /recipes                    controllers.RecipeController.retrieveRecipes
 POST     /recipe             controllers.RecipeController.createRecipe
 
 #* .- Borrar receta a partir de un id
-DELETE /recipe/:id          controllers.RecipeController.deleteRecipe(id:Integer)
+DELETE /recipe/:id          controllers.RecipeController.deleteRecipe(id:Long)
 
 # Modificar receta (modificamos nombre de receta a partir de un id
-PUT     /recipe/:idRecipe/:nuevoNombre            controllers.RecipeController.updateRecipe(idRecipe:Integer,nuevoNombre:String)
+PUT     /recipe/:idRecipe/:nuevoNombre            controllers.RecipeController.updateRecipe(idRecipe:Long,nuevoNombre:String)

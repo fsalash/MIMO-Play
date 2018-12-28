@@ -222,7 +222,7 @@ public class RecipeController extends Controller {
      * @param id
      * @return Json/xml con el resultado de la operacion
      */
-    public Result deleteRecipe(Integer id){
+    public Result deleteRecipe(Long id){
 
         messages = Http.Context.current().messages();
 
@@ -247,7 +247,7 @@ public class RecipeController extends Controller {
      * @param id, nuevo nombre de la receta
      * @return Json/xml con el resultado de la operacion
      */
-    public Result updateRecipe (Integer id, String newRecipeName){
+    public Result updateRecipe (Long id, String newRecipeName){
 
         messages = Http.Context.current().messages();
 
@@ -316,7 +316,7 @@ public class RecipeController extends Controller {
      * Al borrar una receta si no eliminamos la relacion entre idReceta e idIngrediente es posible que al crear otra receta el id se "aproveche" y tengamos lios :-)
      * @param: Recibe el id de la receta en cuestion
      */
-    private void borraRelacionIngredientesReceta(Integer idReceta){
+    private void borraRelacionIngredientesReceta(Long idReceta){
 
         List<RecipeIngredients> ingredientsByIdRecipe = RecipeIngredients.findIngredientsByIdRecipe(new Long(idReceta));
 
