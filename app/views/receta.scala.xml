@@ -1,0 +1,2 @@
+@(receta:Recipe)
+@_receta(receta)

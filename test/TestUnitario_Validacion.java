@@ -7,6 +7,7 @@ import org.junit.Test;
 import java.util.List;
 
 import static junit.framework.TestCase.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class TestUnitario_Validacion {
@@ -16,13 +17,13 @@ public class TestUnitario_Validacion {
 
     @Before
     public void preparaListaRecetas() {
+
         testRecetas = RecipeController.fakeRecetas();
+
     }
 
     @Test
     public void validacionFakeMethodListaNoNula() {
-
-        testRecetas = RecipeController.fakeRecetas();
 
         assertNotNull(testRecetas);
     }

@@ -20,11 +20,11 @@ public class RecipeIngredients  extends Model {
 
 
     @ManyToMany(mappedBy = "idReceta")
-    private long idReceta;
+    private Long idReceta;
 
 
     @ManyToMany(mappedBy = "idIngrediente")
-    private long idIngrediente;
+    private Long idIngrediente;
 
 
     private Integer cantidad; //en gramos por ejemplo
