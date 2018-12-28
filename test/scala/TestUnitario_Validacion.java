@@ -1,3 +1,5 @@
+package scala;
+
 import controllers.RecipeController;
 import models.Recipe;
 import org.junit.After;

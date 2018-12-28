@@ -599,20 +599,15 @@ public class RecipeController extends Controller {
 
         for (int i = 0; i < 10; i++) {
 
-            System.out.println("construyendo receta: " + i);
             Recipe receta = new Recipe();
             List<Ingredients> listaIngredientes = new ArrayList<Ingredients>();
 
             for (int j = 0; j < 3; j++) {
 
-                System.out.println("construyendo ingrediente : " + j + " de receta : " + i);
                 Ingredients ingrediente = new Ingredients();
                 ingrediente.setNombre("ingrediente-" + i);
 
                 listaIngredientes.add(ingrediente);
-                System.out.println("ingrediente introducido en receta");
-                //ingrediente.save();
-                System.out.println("ingrediente introducido en bbdd");
 
 
             }
@@ -626,13 +621,9 @@ public class RecipeController extends Controller {
             posicion.setIdPosicion(new Long(n));
             receta.setComplejidad("DIFICIL");
 
-            //posicion.save();
-
             receta.setPosicion(posicion);
             receta.setNombre("recetaFake-" + i);
 
-
-            //receta.save();
 
 
             for (int k = 0; k < receta.getIngredientes().size(); k++) {
@@ -640,8 +631,6 @@ public class RecipeController extends Controller {
                 RecipeIngredients recIng = new RecipeIngredients();
 
                 Ingredients ingrediente = receta.getIngredientes().get(k);
-
-                System.out.println("creando relacion receta: " + i + " con ingrediente : " + k);
 
                 recIng.setIdIngrediente(ingrediente.getIdIngrediente());
                 recIng.setIdReceta(receta.getIdReceta());
