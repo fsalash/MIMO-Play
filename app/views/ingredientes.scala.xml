@@ -1,0 +1,7 @@
+@(listaIngs:List[Ingredients])
+        <?xml version="1.0" encoding="UTF-8">
+<ingredientes>
+    @for(ing<-listaIngs){
+       @_ingrediente(ing)
+    }
+</ingredientes>

@@ -1,11 +1,24 @@
 # .- Listar recetas
-GET     /recipes                    controllers.RecipeController.retrieveRecipes
+GET     /recipes                                    controllers.RecipeController.retrieveRecipes
 
 # Dar de alta una receta con chequeo de valores required y estableciendo relacion n-m entre recetas e ingredientes, relacion 1-n entre receta y autor y relacion 1-1 entre receta y posicion en el "recetario"
-POST     /recipe             controllers.RecipeController.createRecipe
+POST     /recipe                                    controllers.RecipeController.createRecipe
 
 #* .- Borrar receta a partir de un id
-DELETE /recipe/:id          controllers.RecipeController.deleteRecipe(id:Long)
+DELETE /recipe/:id                                  controllers.RecipeController.deleteRecipe(id:Long)
 
 # Modificar receta (modificamos nombre de receta a partir de un id
-PUT     /recipe/:idRecipe/:nuevoNombre            controllers.RecipeController.updateRecipe(idRecipe:Long,nuevoNombre:String)
+PUT     /recipe/:idRecipe/:nuevoNombre              controllers.RecipeController.updateRecipe(idRecipe:Long,nuevoNombre:String)
+
+
+# .- Listar ingredientes
+GET     /ingredients                                controllers.IngredientController.retrieveIngredients
+
+#* .- Borrar ingrediente a partir de un id
+DELETE /ingredient/:id                              controllers.IngredientController.deleteIngredient(id:Long)
+
+# Dar de alta un ingrediente nuevo
+POST     /ingredient                                controllers.IngredientController.createIngredient
+
+# Modificar ingrediente (modificamos nombre de ingrediente a partir de un id)
+PUT     /ingredient/:idIngrediente/:nuevoNombre     controllers.IngredientController.updateIngredient(idIngrediente:Long,nuevoNombre:String)

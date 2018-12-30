@@ -1,0 +1,11 @@
+@(ingredientDeleted:Ingredients,messages: play.i18n.Messages)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>@messages.at("ingredienteBorrado")</title>
+</head>
+<body>
+<h2>@messages.at("elIngredienteConID") = @ingredientDeleted.getIdIngrediente() - @ingredientDeleted.getNombre()  @messages.at("haSidoBorradoDeBBDD") </h2>
+</body>
+</html>

@@ -8,6 +8,7 @@ import play.data.validation.Constraints;
 import play.data.validation.Constraints.Required;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Ingredients  extends Model {
@@ -21,10 +22,10 @@ public class Ingredients  extends Model {
     private String nombre;
 
     //https://stackoverflow.com/questions/11236806/ebean-how-to-exclude-string-as-column
-    //lo marco como transient para que pueda "bindarlo" de la request aunque no quiera almacenar este valor en este modelo
-    //solucion buscada en internet y referenciada en el enlace indicado
+    //lo marco como transient porque no quiero que el valor de cantidad para el ingrediente se almacene en el propio ingrediente
+    //lo controlaré mediante validacion adHoc en el parseo de la request y almacenaré el valor en la relacion de receta-ingrediente&cantidad
+
     @Transient
-    @Required
     private int cantidad;//en gramos
 
 
@@ -46,6 +47,13 @@ public class Ingredients  extends Model {
         return ingrediente;
     }
 
+
+    public static List<Ingredients> findAllIngredients (){
+
+        List<Ingredients> ingredientesBBDD = find.query().findList();
+
+        return ingredientesBBDD;
+    }
 
     public String getNombre() {
 

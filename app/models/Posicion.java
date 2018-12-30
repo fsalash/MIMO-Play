@@ -21,7 +21,7 @@ public class Posicion extends Model {
 
     public static final Finder<Long, Posicion> find = new Finder<>(Posicion.class);
 
-    public static Posicion findDificultByIdPos (Long idPos){
+    public static Posicion findPosById(Long idPos){
 
         ExpressionList<Posicion> query = find.query().where().eq("idPosicion",idPos);
         Posicion posicion = query.findOne();

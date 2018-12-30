@@ -1,0 +1,12 @@
+@(ingredientUpdated:Ingredients,messages: play.i18n.Messages)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>@messages.at("ingredienteActualizado")</title>
+</head>
+<body>
+<h2>@messages.at("elIngredienteConID")  = @ingredientUpdated.getIdIngrediente() @messages.at("haPasadoA")</h2>
+<h1>@messages.at("tenerElNombre") @ingredientUpdated.getNombre()</h1>
+</body>
+</html>

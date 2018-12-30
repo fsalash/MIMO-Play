@@ -1,5 +1,6 @@
 @(receta:Recipe)
 <recipe>
+    <id>  @receta.getIdReceta()</id>
     <nombre>  @receta.getNombre()</nombre>
     <ingredientes>
         @for(ing<-receta.getIngredientes()){

@@ -41,6 +41,14 @@ public class RecipeIngredients  extends Model {
         return ingredientes;
     }
 
+    public static List<RecipeIngredients> findIngredientsByIdIngredient (Long idIngrediente){
+
+        ExpressionList<RecipeIngredients> query = find.query().where().eq("idIngrediente",idIngrediente);
+        List<RecipeIngredients> relacionesRecetaIngredientes = query.findList();
+
+        return relacionesRecetaIngredientes;
+    }
+
     public Long getId() {
 
         return id;
