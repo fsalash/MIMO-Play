@@ -1,0 +1,12 @@
+@(autorUpdated:Autor,messages: play.i18n.Messages)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>@messages.at("autorActualizado")</title>
+</head>
+<body>
+<h2>@messages.at("elAutorConID")  = @autorUpdated.getId() @messages.at("haPasadoA")</h2>
+<h1>@messages.at("tenerElNombre") @autorUpdated.getNombre(),@autorUpdated.getApellidos()</h1>
+</body>
+</html>

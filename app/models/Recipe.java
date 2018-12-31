@@ -65,6 +65,12 @@ public class Recipe extends Model {
         return recetas;
     }
 
+    public static List<Recipe> findRelationsByIdAuthor (Long id){
+
+        ExpressionList<Recipe> query = find.query().where().eq("autor.id",id);
+
+        return query.findList();
+    }
 
 
     public Recipe(){

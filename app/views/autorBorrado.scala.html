@@ -1,0 +1,11 @@
+@(autorDeleted:Autor,messages: play.i18n.Messages)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>@messages.at("autorBorrado")</title>
+</head>
+<body>
+<h2>@messages.at("elAutorConID") = @autorDeleted.getId() - @autorDeleted.getNombre(),@autorDeleted.getApellidos()  @messages.at("haSidoBorradoDeBBDD") </h2>
+</body>
+</html>

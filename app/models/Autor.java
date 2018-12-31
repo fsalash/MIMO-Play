@@ -14,7 +14,6 @@ public class Autor extends Model {
     @Id
     private Long id;
 
-
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "autor")
     private List<Recipe> listaRecetasCreadas;
 
@@ -45,6 +44,21 @@ public class Autor extends Model {
 
         return autor;
     }
+
+    public static List<Autor> findAllAuthors (){
+
+        List<Autor> autoresBBDD = find.query().findList();
+
+        return autoresBBDD;
+    }
+
+    public static Autor findAuthorById (Long idAutor){
+
+        ExpressionList<Autor> query = find.query().where().eq("id",idAutor);
+
+        return query.findOne();
+    }
+
 
     public Long getId() {
         return id;

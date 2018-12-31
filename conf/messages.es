@@ -31,7 +31,7 @@ case7FlagValidacion = Posicion > 1000, nombre de autor y de ingredientes muy lar
 case8FlagValidacion = Posicion > 1000 y nombre de ingrediente muy largo
 
 
-ingrediente-1FlagValidacion = Longitud del nombre excesiva
+ingrediente-1FlagValidacion = Longitud del nombre de ingrediente excesiva
 ingredienteRepetido = Ingrediente Repetido
 ingredienteConMismoNombre = Se ha encontrado un ingrediente con el mismo nombre
 noSeHaEncontradoIngrediente = No se ha encontrado ningun ingrediente con
@@ -40,3 +40,12 @@ elIngredienteConID = El ingrediente con id
 haSidoBorradoDeBBDD = ha sido borrado de bbdd
 ingredienteActualizado = Ingrediente Actualizado
 ingredienteEnUso = El ingrediente está en uso y no puede ser borrado
+
+autor-1FlagValidacion = Longitud del nombre/apellidos de autor excesiva
+autorRepetido = Autor repetido
+autorConMismoNombre = Se ha encontrado un autor con el mismo nombre/apellidos
+noSeHaEncontradoAutor = No se ha encontrado ningun autor con
+autorEnUso = El autor está en uso y no puede ser borrado
+autorBorrado = Autor borrado
+elAutorConID = El autor con id
+autorActualizado = Autor Actualizado

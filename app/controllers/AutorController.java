@@ -11,6 +11,7 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Results;
+import views.xml.autores;
 import views.xml.ingredientes;
 
 import javax.inject.Inject;
@@ -21,18 +22,18 @@ import java.util.Random;
 
 
 /**
- * Controlador general para el API de ingredientes
+ * Controlador general para el API de autores de recetas
  *
  * Expone metodos para:
  *
- * .- Listar ingredientes
- * .- Dar de alta un ingrediente
- * .- Modificar nombre ingrediente
- * .- Borrar ingrediente
+ * .- Listar autores
+ * .- Dar de alta un autor
+ * .- Modificar nombre de autor
+ * .- Borrar autor (con chequeo de que no está siendo usado en ninguna receta)
  *
  */
 
-public class IngredientController extends Controller {
+public class AutorController extends Controller {
 
     @Inject
     FormFactory formFactory;
@@ -40,7 +41,7 @@ public class IngredientController extends Controller {
     @Inject
     private SyncCacheApi cache;
 
-    private static List<Ingredients> listaIngredientes = new ArrayList<Ingredients>();
+    private static List<Autor> listaAutores= new ArrayList<Autor>();
 
     static final String XML = "XML";
     static final String JSON = "JSON";
@@ -56,10 +57,10 @@ public class IngredientController extends Controller {
     static Messages messages;
 
     /**
-     * Metodo que consulta en bbdd los ingredientes creados y devuelve informacion en json o xml segun Accept del header de la invocacion (json por defecto)
+     * Metodo que consulta en bbdd los autores creados y devuelve informacion en json o xml segun Accept del header de la invocacion (json por defecto)
      * @return : listado de ingredientes almacenados
      */
-    public Result retrieveIngredients() {
+    public Result retrieveAuthors() {
 
         messages = Http.Context.current().messages();
 
@@ -67,18 +68,18 @@ public class IngredientController extends Controller {
         chequeaCabeceraRequest(request());
 
 
-        //buscamos todos los ingredientes existentes en bbdd
+        //buscamos todos los autores existentes en bbdd
 
-        List<Ingredients> listaEnCache = cache.get("listaIngredientes");
+        List<Autor> listaEnCache = cache.get("listaAutores");
 
         if( listaEnCache != null){
 
-            listaIngredientes =  listaEnCache;
+            listaAutores =  listaEnCache;
         }
         else{
 
-            listaIngredientes = Ingredients.findAllIngredients();
-            cache.set("listaIngredientes",listaIngredientes);
+            listaAutores = Autor.findAllAuthors();
+            cache.set("listaAutores",listaAutores);
         }
 
 
@@ -86,15 +87,15 @@ public class IngredientController extends Controller {
         if(flagResponse.equals(XML)){
 
             System.out.println("type xml");
-            return ok(ingredientes.render(listaIngredientes));
+            return ok(autores.render(listaAutores));
         }
         else{
 
             if(flagResponse.equals(JSON)){
 
                 System.out.println("type json");
-                JsonNode jsonNodeListaRecetas = Json.toJson(listaIngredientes);
-                return ok(jsonNodeListaRecetas);
+                JsonNode jsonNodeListaAutores= Json.toJson(listaAutores);
+                return ok(jsonNodeListaAutores);
 
             }
         }
@@ -103,38 +104,38 @@ public class IngredientController extends Controller {
     }
 
     /**
-     * Metodo para crear ingredientes
-     * @return JSON/XML con el ingrediente creado
+     * Metodo para crear autores
+     * @return JSON/XML con el autor creado
      */
-    public Result createIngredient (){
+    public Result createAuthor (){
 
         messages = Http.Context.current().messages();
 
         chequeaCabeceraRequest(request());
 
-        Form<Ingredients> form = formFactory.form(Ingredients.class).bindFromRequest();
+        Form<Autor> form = formFactory.form(Autor.class).bindFromRequest();
 
         try{
 
-            Ingredients ingrediente  = new Ingredients();
-            ingrediente = form.get(); //"bindo" el formulario de entrada a un objeto ingrediente
+            Autor autor  = new Autor();
+            autor = form.get(); //"bindo" el formulario de entrada a un objeto autor
 
 
 
-            /*Para poder dar de alta un nuevo ingrediente se debe cumplir que:
+            /*Para poder dar de alta un nuevo autor se debe cumplir que:
 
-                1.- No exista un ingrediente con el mismo nombre en bbdd
+                1.- No exista un autor con el mismo nombre en bbdd
 
                Usamos finder previo a la insercion para ver si ya existe el elemento
             */
 
-            validaDatosEntrada(ingrediente);
+            validaDatosEntrada(autor);
 
 
             switch (flagErrorValidacion){
 
                 case -1:
-                    JsonNode nodoRespuesta1 = Json.toJson(messages.at("ingrediente-1FlagValidacion") + ingrediente.getNombre());
+                    JsonNode nodoRespuesta1 = Json.toJson(messages.at("autor-1FlagValidacion") + autor.getNombre());
                     return badRequest(nodoRespuesta1);
 
 
@@ -142,27 +143,27 @@ public class IngredientController extends Controller {
 
 
 
-            Ingredients ingredientByName = Ingredients.findIngredientByName(ingrediente.getNombre());
+            Autor autorByName = Autor.findAuthorByNameAndSurname(autor.getNombre(),autor.getApellidos());
 
-            if(ingredientByName==null){
+            if(autorByName==null){
 
-               //no existe el ingrediente asi que lo guardamos
+               //no existe el autor asi que lo guardamos
 
-                ingrediente.save();
+                autor.save();
 
-                cache.remove("listaIngredientes"); //ya no vale la cache para siguientes consultas asi que anulamos
+                cache.remove("listaAutores"); //ya no vale la cache para siguientes consultas asi que anulamos
 
 
                 switch (flagResponse){ //revisamos como acepta la respuesta el cliente
 
                     case XML:
-                        return ok(views.xml._ingrediente.render(ingrediente)); //devolvemos info del ingrediente en xml
+                        return ok(views.xml._autor.render(autor)); //devolvemos info del autor en xml
 
                     case JSON:
-                        JsonNode jsonNode = Json.toJson(ingrediente);
+                        JsonNode jsonNode = Json.toJson(autor);
                         System.out.println("doc jsonNode body: " + jsonNode.toString());
                         System.out.println(jsonNode);
-                        return ok(jsonNode);//devolvemos info del ingrediente en json
+                        return ok(jsonNode);//devolvemos info del autor en json
 
                     default:
                         return Results.badRequest();//en otro caso devolvemos error en request
@@ -172,7 +173,7 @@ public class IngredientController extends Controller {
             }
 
             else{
-                return ok(views.html.ingredienteRepe.render(messages)); //ya existe un ingrediente guardado en bbdd con el mismo nombre
+                return ok(views.html.autorRepe.render(messages)); //ya existe un autor guardado en bbdd con el mismo nombre
             }
 
 
@@ -180,66 +181,68 @@ public class IngredientController extends Controller {
         }catch (IllegalStateException ex){
             System.out.println("error de bindado del formulario de entrada, es posible que campos required no estén siendo informados");
             ex.printStackTrace();
-            return badRequest(views.html.ingredienteErr.render(messages));
+            return badRequest(views.html.autorErr.render(messages));
         }
     }
 
 
     /**
-     * Borrado de ingrediente por id (ojo que habrá operaciones que por la relacion entre receta-ingrediente no se puedan realizar
+     * Borrado de autor por id (ojo que habrá operaciones que por la relacion entre receta-autor no se puedan realizar
      * @param id
      * @return Json/xml con el resultado de la operacion
      */
-    public Result deleteIngredient(Long id){
+    public Result deleteAuthor(Long id){
 
         messages = Http.Context.current().messages();
 
         chequeaCabeceraRequest(request());
 
-        Ingredients ingredientById = Ingredients.findIngredientById(id);
-        List<RecipeIngredients> relacionesRecetaIngredientes = RecipeIngredients.findIngredientsByIdIngredient(id);
+        Autor autorById = Autor.findAuthorById(id);
+        List<Recipe> relacionesRecetaAutor = Recipe.findRelationsByIdAuthor(id);
 
-        if(ingredientById!=null){
+        if(autorById!=null){
 
-            if(relacionesRecetaIngredientes.size() == 0) {
-                ingredientById.delete();
+            if(relacionesRecetaAutor.size()==0) {
+                autorById.delete();
                 cache.remove("listaIngredientes"); //ya no vale la cache para siguientes consultas asi que anulamos
-                return ok(views.html.ingredienteBorrado.render(ingredientById,messages));
+                return ok(views.html.autorBorrado.render(autorById,messages));
             }
             else {
-                System.out.println("No se puede borrar el ingrediente porque está siendo usado en una receta.");
-                return forbidden(Json.toJson(messages.at("ingredienteEnUso")));
+                System.out.println("No se puede borrar el autor porque está siendo usado en una receta.");
+                return forbidden(Json.toJson(messages.at("autorEnUso")));
 
             }
         }
         else{
-            System.out.println("no se ha encontrado el id del ingrediente: " + id);
-            return ok(views.html.ingredienteNoEncontrado.render(id,messages));
+            System.out.println("no se ha encontrado el id del autor: " + id);
+            return ok(views.html.autorNoEncontrado.render(id,messages));
         }
 
     }
 
 
     /**
-     * Actualizacion del nombre del ingrediente por id
-     * @param id, nuevo nombre del ingrediente
+     * Actualizacion del nombre del autor por id
+     * @param nuevo nombre y apellidos del autor
      * @return Json/xml con el resultado de la operacion
      */
-    public Result updateIngredient (Long id, String newIngredientName){
+    public Result updateAuthor (Long id, String newAuthorName,String newAuthorSurname){
 
         messages = Http.Context.current().messages();
 
         chequeaCabeceraRequest(request());
 
-        Ingredients ingredientById = Ingredients.findIngredientById(id);
+        Autor autorById = Autor.findAuthorById(id);
 
-        if(ingredientById!=null){
+        if(autorById!=null){
 
-            ingredientById.setNombre(newIngredientName);
-            ingredientById.update();
-            cache.remove("listaIngredientes"); //ya no vale la cache para siguientes consultas asi que anulamos
-            System.out.println("Update correcto:  " + ingredientById.getNombre());
-            return ok(views.html.ingredienteActualizado.render(ingredientById,messages));
+            autorById.setNombre(newAuthorName);
+            autorById.setApellidos(newAuthorSurname);
+            autorById.update();
+            cache.remove("listaAutores"); //ya no vale la cache para siguientes consultas asi que anulamos
+
+            System.out.println("Update correcto:  " + autorById.getNombre() + "," + autorById.getApellidos());
+            return ok(views.html.autorActualizado.render(autorById,messages));
 
         }
         else{
@@ -256,19 +259,19 @@ public class IngredientController extends Controller {
 
 
     /**
-     * Metodo de validacion generico para controlar longitud del nombre del ingrediente a crear
+     * Metodo de validacion generico para controlar longitud del nombre del autor
      *
      * @param: ingrediente de entrada
      *  No devuelve nada porque trabajamos con una variable global
      */
 
-    private void validaDatosEntrada(Ingredients ingrediente){
+    private void validaDatosEntrada(Autor autor){
 
         flagErrorValidacion = 0;
 
-        // validacion ingrediente
+        // validacion autor
 
-            if (ingrediente.getNombre().length()>25) {
+            if (autor!=null && (autor.getNombre().length()>25 || autor.getApellidos().length()>25)) {
                 flagErrorValidacion = -1;
             }
 

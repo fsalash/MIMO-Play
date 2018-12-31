@@ -22,3 +22,16 @@ POST     /ingredient                                controllers.IngredientContro
 
 # Modificar ingrediente (modificamos nombre de ingrediente a partir de un id)
 PUT     /ingredient/:idIngrediente/:nuevoNombre     controllers.IngredientController.updateIngredient(idIngrediente:Long,nuevoNombre:String)
+
+
+# .- Listar autores
+GET     /authors                                    controllers.AutorController.retrieveAuthors
+
+#* .- Borrar autor a partir de un id
+DELETE /author/:id                                  controllers.AutorController.deleteAuthor(id:Long)
+
+# Dar de alta un autor nuevo
+POST     /author                                    controllers.AutorController.createAuthor
+
+# Modificar autor (modificamos nombre/apellidos de autor a partir de un id)
+PUT     /author/:idAutor/:nuevoNombre/:nuevoApellido     controllers.AutorController.updateAuthor(idAutor:Long,nuevoNombre:String,nuevoApellido:String)

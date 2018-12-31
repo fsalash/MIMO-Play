@@ -1,5 +1,6 @@
 @(autor:Autor)
 <autor>
+    <id>@autor.getId()</id>
     <nombre>@autor.getNombre()</nombre>
     <apellidos>@autor.getApellidos()</apellidos>
     <nacionalidad>@autor.getNacionalidad()</nacionalidad>
