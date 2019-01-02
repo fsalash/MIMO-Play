@@ -156,7 +156,7 @@ public class IngredientController extends Controller {
                 switch (flagResponse){ //revisamos como acepta la respuesta el cliente
 
                     case XML:
-                        return ok(views.xml._ingrediente.render(ingrediente)); //devolvemos info del ingrediente en xml
+                        return ok(views.xml.ingrediente.render(ingrediente)); //devolvemos info del ingrediente en xml
 
                     case JSON:
                         JsonNode jsonNode = Json.toJson(ingrediente);

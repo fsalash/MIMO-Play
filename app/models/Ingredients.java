@@ -4,6 +4,7 @@ package models;
 import io.ebean.ExpressionList;
 import io.ebean.Finder;
 import io.ebean.Model;
+import io.ebean.annotation.JsonIgnore;
 import play.data.validation.Constraints;
 import play.data.validation.Constraints.Required;
 
@@ -26,6 +27,7 @@ public class Ingredients  extends Model {
     //lo controlaré mediante validacion adHoc en el parseo de la request y almacenaré el valor en la relacion de receta-ingrediente&cantidad
 
     @Transient
+    @JsonIgnore
     private int cantidad;//en gramos
 
 

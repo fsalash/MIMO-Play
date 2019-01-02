@@ -636,7 +636,7 @@ public class RecipeController extends Controller {
     public static List<Recipe> fakeRecetas() {
 
         List<Recipe> listaFakeRecetas = new ArrayList<Recipe>();
-        System.out.println("construyendo recetas FAKE");
+        //System.out.println("construyendo recetas FAKE");
 
         for (int i = 0; i < 10; i++) {
 
