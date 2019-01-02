@@ -149,6 +149,7 @@ public class AutorController extends Controller {
 
                //no existe el autor asi que lo guardamos
 
+                //autor.setListaRecetasCreadas(new ArrayList<Recipe>(0)); // autor creado a pelo sin receta/s asignada/s
                 autor.save();
 
                 cache.remove("listaAutores"); //ya no vale la cache para siguientes consultas asi que anulamos

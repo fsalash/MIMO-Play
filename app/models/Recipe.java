@@ -31,14 +31,15 @@ public class Recipe extends Model {
 
     private String explicacion;
 
-    @Required
+
     @ManyToOne
-    private Autor autor;
+    private Long idAutor;
 
     @Required
     private String complejidad;
 
-
+    @Required
+    private Autor autor;
 
     public static final Finder<Long,Recipe> find = new Finder<>(Recipe.class);
 
@@ -67,7 +68,7 @@ public class Recipe extends Model {
 
     public static List<Recipe> findRelationsByIdAuthor (Long id){
 
-        ExpressionList<Recipe> query = find.query().where().eq("autor.id",id);
+        ExpressionList<Recipe> query = find.query().where().eq("idAutor",id);
 
         return query.findList();
     }
@@ -133,14 +134,14 @@ public class Recipe extends Model {
         this.explicacion = pasos;
     }
 
-    public Autor getAutor() {
+    public Long getIdAutor() {
 
-        return autor;
+        return idAutor;
     }
 
-    public void setAutor(Autor autor) {
+    public void setIdAutor(Long idAutor) {
 
-        this.autor = autor;
+        this.idAutor = idAutor;
     }
 
     public String getComplejidad() {
@@ -149,5 +150,13 @@ public class Recipe extends Model {
 
     public void setComplejidad(String complejidad) {
         this.complejidad = complejidad;
+    }
+
+    public Autor getAutor() {
+        return autor;
+    }
+
+    public void setAutor(Autor autor) {
+        this.autor = autor;
     }
 }

@@ -19,7 +19,7 @@ create table ingredients (
 
 create table posicion (
   id_posicion                   bigint auto_increment not null,
-  desc_posicion                 varchar(255),
+  complejidad                   varchar(255),
   constraint pk_posicion primary key (id_posicion)
 );
 
@@ -28,7 +28,7 @@ create table recipe (
   nombre                        varchar(255),
   posicion_id_posicion          bigint,
   explicacion                   varchar(255),
-  autor_id                      bigint,
+  id_autor                      bigint,
   complejidad                   varchar(255),
   constraint uq_recipe_posicion_id_posicion unique (posicion_id_posicion),
   constraint pk_recipe primary key (id_receta)
@@ -44,16 +44,10 @@ create table recipe_ingredients (
 
 alter table recipe add constraint fk_recipe_posicion_id_posicion foreign key (posicion_id_posicion) references posicion (id_posicion) on delete restrict on update restrict;
 
-create index ix_recipe_autor_id on recipe (autor_id);
-alter table recipe add constraint fk_recipe_autor_id foreign key (autor_id) references autor (id) on delete restrict on update restrict;
-
 
 # --- !Downs
 
 alter table recipe drop constraint if exists fk_recipe_posicion_id_posicion;
-
-alter table recipe drop constraint if exists fk_recipe_autor_id;
-drop index if exists ix_recipe_autor_id;
 
 drop table if exists autor;
 

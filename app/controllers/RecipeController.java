@@ -142,22 +142,22 @@ public class RecipeController extends Controller {
             switch (flagErrorValidacion){
 
                 case -1:
-                    JsonNode nodoRespuesta1 = Json.toJson(messages.at("case-1FlagValidacion") + receta.getAutor());
+                    JsonNode nodoRespuesta1 = Json.toJson(messages.at("case-1FlagValidacion") + receta.getIdAutor());
                     return badRequest(nodoRespuesta1);
                 case 2:
-                    JsonNode nodoRespuesta2 = Json.toJson(messages.at("case2FlagValidacion") + receta.getIngredientes() + receta.getAutor());
+                    JsonNode nodoRespuesta2 = Json.toJson(messages.at("case2FlagValidacion") + receta.getIngredientes() + receta.getIdAutor());
                     return badRequest(nodoRespuesta2);
                 case 3:
-                    JsonNode nodoRespuesta3 = Json.toJson(messages.at("case3FlagValidacion") + receta.getAutor());
+                    JsonNode nodoRespuesta3 = Json.toJson(messages.at("case3FlagValidacion") + receta.getIdAutor());
                     return badRequest(nodoRespuesta3);
                 case 4:
-                    JsonNode nodoRespuesta4 = Json.toJson(messages.at("case4FlagValidacion") + receta.getAutor() + receta.getPosicion());
+                    JsonNode nodoRespuesta4 = Json.toJson(messages.at("case4FlagValidacion") + receta.getIdAutor() + receta.getPosicion());
                     return badRequest(nodoRespuesta4);
                 case 5 : //
                     JsonNode nodoRespuesta5 = Json.toJson(messages.at("case5FlagValidacion") + receta.getPosicion());
                     return badRequest(nodoRespuesta5);
                 case 7 : //
-                    JsonNode nodoRespuesta7 = Json.toJson(messages.at("case7FlagValidacion") + receta.getAutor() + receta.getPosicion() + receta.getIngredientes() );
+                    JsonNode nodoRespuesta7 = Json.toJson(messages.at("case7FlagValidacion") + receta.getIdAutor() + receta.getPosicion() + receta.getIngredientes() );
                     return badRequest(nodoRespuesta7);
                 case 8 : //
                     JsonNode nodoRespuesta8 = Json.toJson(messages.at("case8FlagValidacion") + receta.getPosicion() + receta.getPosicion());
@@ -325,9 +325,9 @@ public class RecipeController extends Controller {
 
 
         //validacion del autor
-        if(receta.getAutor()!=null && receta.getAutor().getNombre() != null && receta.getAutor().getApellidos()!=null && (receta.getAutor().getNombre().length()>30 || receta.getAutor().getApellidos().length()> 30)) {
-            flagErrorValidacion = flagErrorValidacion -1 ;
-        }
+       // if(receta.getAutor()!=null && receta.getAutor().getNombre() != null && receta.getAutor().getApellidos()!=null && (receta.getAutor().getNombre().length()>30 || receta.getAutor().getApellidos().length()> 30)) {
+        //    flagErrorValidacion = flagErrorValidacion -1 ;
+        //}
 
 
         // validacion ingredientes
@@ -408,7 +408,8 @@ public class RecipeController extends Controller {
 
 
             //autor
-            autor = Autor.findAuthorByIDReceta(recetaBBDD.getAutor().getId());
+            autor = Autor.findAuthorById(recetaBBDD.getIdAutor());
+            receta.setIdAutor(autor.getId());
             receta.setAutor(autor);
 
 
@@ -501,19 +502,22 @@ public class RecipeController extends Controller {
      */
     private void procesaAutor(Recipe receta){
 
-        Autor autor= receta.getAutor(); //Una receta tiene un autor y un autor varias receatas 1-n
-
-
-        Autor autorAlmacenado = Autor.findAuthorByNameAndSurname(autor.getNombre(), autor.getApellidos());
+        //Una receta tiene un autor y un autor varias receatas 1-n
+        Autor autorAlmacenado = Autor.findAuthorByNameAndSurname(receta.getAutor().getNombre(), receta.getAutor().getApellidos());
 
         if(autorAlmacenado !=null){
 
-           receta.setAutor(autorAlmacenado);//guardamos relacion 1-n de autores con receta (una receta solo es de un autor, y un autor tiene n recetas
+           //guardamos relacion 1-n de autores con receta (una receta solo es de un autor, y un autor tiene n recetas
+           receta.setAutor(autorAlmacenado);
+           receta.setIdAutor(autorAlmacenado.getId());
         }
-        else{
+        else{ //se debe crear el nuevo autor para la receta
 
-            autor.save();
-            receta.setAutor(autor); //idem guardamos la relacion entre autor nuevo y la receta creada
+            Autor autorEnPost = receta.getAutor();
+
+            autorEnPost.save();
+            receta.setIdAutor(autorEnPost.getId()); //idem guardamos la relacion entre autor nuevo y la receta creada
+            receta.setAutor(autorEnPost);
         }
 
 
@@ -679,7 +683,9 @@ public class RecipeController extends Controller {
             Autor autor = new Autor();
             autor.setApellidos("fakeSurname");
             autor.setNombre("fakeName");
+            autor.setId(new Long(n));
 
+            receta.setIdAutor(autor.getId());
             receta.setAutor(autor);
 
             listaFakeRecetas.add(receta);

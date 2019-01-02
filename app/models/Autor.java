@@ -3,19 +3,21 @@ package models;
 import io.ebean.ExpressionList;
 import io.ebean.Finder;
 import io.ebean.Model;
+import io.ebean.annotation.JsonIgnore;
 import play.data.validation.Constraints.Required;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 public class Autor extends Model {
 
     @Id
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "autor")
     private Long id;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "autor")
-    private List<Recipe> listaRecetasCreadas;
+    //private List<Recipe> listaRecetasCreadas;
 
     @Required
     private String nombre;
@@ -68,14 +70,14 @@ public class Autor extends Model {
         this.id = id;
     }
 
-    public List<Recipe> getListaRecetasCreadas() {
+   /** public List<Recipe> getListaRecetasCreadas() {
         return listaRecetasCreadas;
-    }
+   }
 
-    public void setListaRecetasCreadas(List<Recipe> autor) {
+   public void setListaRecetasCreadas(List<Recipe> autor) {
         this.listaRecetasCreadas = autor;
-    }
-
+   }
+**/
 
 
     public String getNombre() {

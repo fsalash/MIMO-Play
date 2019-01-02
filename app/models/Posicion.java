@@ -17,7 +17,7 @@ public class Posicion extends Model {
     private Long idPosicion;//pagina del recetario. En una pagina una receta y solo una. Un poco forzada pero queria representar una relacion uno a uno sin usar un campo extra en un tabla :-)
 
 
-    private String descPosicion;
+    private String complejidad;
 
     public static final Finder<Long, Posicion> find = new Finder<>(Posicion.class);
 
@@ -39,11 +39,11 @@ public class Posicion extends Model {
         this.idPosicion = idPos;
     }
 
-    public String getDescPosicion() {
-        return descPosicion;
+    public String getComplejidad() {
+        return complejidad;
     }
 
-    public void setDescPosicion(String descPosicion) {
-        this.descPosicion = descPosicion;
+    public void setComplejidad(String descPosicion) {
+        this.complejidad = descPosicion;
     }
 }
