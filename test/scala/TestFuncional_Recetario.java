@@ -6,6 +6,7 @@ import models.*;
 import org.junit.Before;
 import org.junit.Test;
 import play.Application;
+import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
@@ -67,8 +68,8 @@ public class TestFuncional_Recetario extends WithApplication {
         ingredientById.delete();//veo que los almacena en la misma bbdd usada en ejecucion asi que borro elemento dummy
     }
 
-    @Test //pruba funcional completa de modelo, vista y controller procesando el map y recibiendo body como Form para reutilizar
-    public void recuperaCreaYrecuperaAutoresFake(){
+    @Test //prueba funcional completa de modelo, vista y controller procesando el map y recibiendo body como Form para reutilizar
+    public void creaYrecuperaAutoresFake(){
 
 
         for (int i =0;i<5;i++){
@@ -76,8 +77,8 @@ public class TestFuncional_Recetario extends WithApplication {
             //https://stackoverflow.com/questions/10890381/test-multipartformdata-in-play-2-0-fakerequest/28130543
             Map<String,String> data = new HashMap<String, String>();
 
-            data.put("nombre", "authorName-"+i);
-            data.put("apellidos", "authorSurname-"+i);
+            data.put("nombre", "authorFakeName-"+i);
+            data.put("apellidos", "authorFakeSurname-"+i);
 
             Http.RequestBuilder req = (Http.RequestBuilder) Helpers.fakeRequest().
                 method("POST")
@@ -103,5 +104,80 @@ public class TestFuncional_Recetario extends WithApplication {
 
     }
 
+
+    @Test //prueba funcional completa de modelo, vista y controller procesando el map y recibiendo body como Form para reutilizar
+    public void creaYrecuperaIngredientesFake(){
+
+
+        for (int i =0;i<5;i++){
+
+            //https://stackoverflow.com/questions/10890381/test-multipartformdata-in-play-2-0-fakerequest/28130543
+            Map<String,String> data = new HashMap<String, String>();
+
+            data.put("nombre", "ingredientFakeName-"+i);
+
+
+            Http.RequestBuilder req = (Http.RequestBuilder) Helpers.fakeRequest().
+                    method("POST")
+                    .uri("/ingredient")
+                    .header("Content-Type", "application/json")
+                    .bodyForm(data);
+
+            Result r = Helpers.route(app, req);
+            assertEquals(200, r.status());
+            System.out.println("ingredient fake test created + " + i);
+
+        }
+
+        Http.RequestBuilder req = Helpers.fakeRequest()
+                .method("GET")
+                .uri("/ingredients")
+                .header("Accept", "application/xml");
+
+        Result r = Helpers.route(app, req);
+        assertEquals(200, r.status());
+        System.out.println("ingredients--> " + r.body());
+
+
+    }
+
+    @Test //prueba funcional completa de modelo, vista y controller procesando el map y recibiendo body como Form para reutilizar
+    public void creaYrecuperaRecetasFake(){
+
+
+        for (int i =0;i<5;i++){
+
+            //https://www.playframework.com/documentation/2.6.x/ScalaTestingWithScalaTest
+            String data = "{\"nombre\":\"recipe-" + i +
+                    " \",\"autor\":{\"nombre\":\"authorFakeName-"+i+
+                    "\",\"apellidos\": \"salas\"}, " +
+                    "\"ingredientes\": [{\"nombre\":\"fakeIngredient-"+i+
+                    "\",\"cantidad\":\"3"+i+"\"}] ,\"complejidad\":\"alta\"," +
+                    " \"posicion\":{\"idPosicion\":\"90"+i+"\"} }";
+
+            Http.RequestBuilder req = (Http.RequestBuilder) Helpers.fakeRequest().
+                    method("POST")
+                    .uri("/recipe")
+                    .header("Content-Type", "application/json")
+                    .bodyJson(Json.parse(data));
+
+            Result r = Helpers.route(app, req);
+            assertEquals(200, r.status());
+            System.out.println("recipe fake test created + " + i);
+
+        }
+
+
+        Http.RequestBuilder req = Helpers.fakeRequest()
+                .method("GET")
+                .uri("/recipes")
+                .header("Accept", "application/xml");
+
+        Result r = Helpers.route(app, req);
+        assertEquals(200, r.status());
+        System.out.println("recipes--> " + r.body());
+
+
+    }
 
 }
