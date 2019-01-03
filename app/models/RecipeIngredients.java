@@ -3,8 +3,6 @@ package models;
 import io.ebean.ExpressionList;
 import io.ebean.Finder;
 import io.ebean.Model;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;

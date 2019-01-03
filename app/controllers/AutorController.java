@@ -12,8 +12,6 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Results;
 import views.xml.autores;
-import views.xml.ingredientes;
-
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;

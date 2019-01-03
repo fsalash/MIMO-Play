@@ -5,7 +5,6 @@ import io.ebean.ExpressionList;
 import io.ebean.Finder;
 import io.ebean.Model;
 import io.ebean.annotation.JsonIgnore;
-import play.data.validation.Constraints;
 import play.data.validation.Constraints.Required;
 
 import javax.persistence.*;
