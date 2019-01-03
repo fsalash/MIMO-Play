@@ -180,4 +180,28 @@ public class TestFuncional_Recetario extends WithApplication {
 
     }
 
+
+    @Test //prueba funcional completa de modelo, vista y controller procesando el map y recibiendo body como Form para reutilizar
+    public void validaRequiredEnRecetaFake() {
+
+            //https://www.playframework.com/documentation/2.6.x/ScalaTestingWithScalaTest
+            String data = "{\"nombreES\":\"recipe-X" +//deberia validar que no hay nombre de receta (he puesto nombreES)
+                    " \",\"autor\":{\"nombre\":\"authorFakeName-X" +
+                    "\",\"apellidos\": \"salas\"}, " +
+                    "\"ingredientes\": [{\"nombre\":\"fakeIngredient-" +
+                    "\",\"cantidad\":\"30" +  "\"}] ,\"complejidad\":\"alta\"," +
+                    " \"posicion\":{\"idPosicion\":\"90" + "\"} }";
+
+            Http.RequestBuilder req = (Http.RequestBuilder) Helpers.fakeRequest().
+                    method("POST")
+                    .uri("/recipe")
+                    .header("Content-Type", "application/json")
+                    .bodyJson(Json.parse(data));
+
+            Result r = Helpers.route(app, req);
+            assertEquals(400, r.status());
+            System.out.println("recipe fake test");
+
+    }
+
 }
