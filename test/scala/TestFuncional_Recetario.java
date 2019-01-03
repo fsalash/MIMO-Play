@@ -68,7 +68,7 @@ public class TestFuncional_Recetario extends WithApplication {
         ingredientById.delete();//veo que los almacena en la misma bbdd usada en ejecucion asi que borro elemento dummy
     }
 
-    @Test //prueba funcional completa de modelo, vista y controller procesando el map y recibiendo body como Form para reutilizar
+    @Test //prueba funcional completa de modelo, vista y controller procesando el map y recibiendo body como Form
     public void creaYrecuperaAutoresFake(){
 
 
@@ -105,7 +105,7 @@ public class TestFuncional_Recetario extends WithApplication {
     }
 
 
-    @Test //prueba funcional completa de modelo, vista y controller procesando el map y recibiendo body como Form para reutilizar
+    @Test //prueba funcional completa de modelo, vista y controller procesando el map y recibiendo body como Form
     public void creaYrecuperaIngredientesFake(){
 
 
@@ -141,7 +141,7 @@ public class TestFuncional_Recetario extends WithApplication {
 
     }
 
-    @Test //prueba funcional completa de modelo, vista y controller procesando el map y recibiendo body como Form para reutilizar
+    @Test //prueba funcional completa de modelo, vista y controller procesando el map y recibiendo body como json
     public void creaYrecuperaRecetasFake(){
 
 
@@ -181,7 +181,7 @@ public class TestFuncional_Recetario extends WithApplication {
     }
 
 
-    @Test //prueba funcional completa de modelo, vista y controller procesando el map y recibiendo body como Form para reutilizar
+    @Test //prueba funcional completa de modelo, vista y controller procesando el map y recibiendo body como json
     public void validaRequiredEnRecetaFake() {
 
             //https://www.playframework.com/documentation/2.6.x/ScalaTestingWithScalaTest
