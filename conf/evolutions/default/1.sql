@@ -4,7 +4,7 @@
 # --- !Ups
 
 create table autor (
-  id                            bigint auto_increment not null,
+  id                            bigserial not null,
   nombre                        varchar(255),
   apellidos                     varchar(255),
   nacionalidad                  varchar(255),
@@ -12,19 +12,19 @@ create table autor (
 );
 
 create table ingredients (
-  id                            bigint auto_increment not null,
+  id                            bigserial not null,
   nombre                        varchar(255),
   constraint pk_ingredients primary key (id)
 );
 
 create table posicion (
-  id                            bigint auto_increment not null,
+  id                            bigserial not null,
   complejidad                   varchar(255),
   constraint pk_posicion primary key (id)
 );
 
 create table recipe (
-  id                            bigint auto_increment not null,
+  id                            bigserial not null,
   nombre                        varchar(255),
   explicacion                   varchar(255),
   complejidad                   varchar(255),
@@ -54,24 +54,24 @@ alter table recipe_ingredients add constraint fk_recipe_ingredients_ingredients 
 
 # --- !Downs
 
-alter table recipe drop constraint if exists fk_recipe_autor_id;
+alter table if exists recipe drop constraint if exists fk_recipe_autor_id;
 drop index if exists ix_recipe_autor_id;
 
-alter table recipe drop constraint if exists fk_recipe_posicion_id;
+alter table if exists recipe drop constraint if exists fk_recipe_posicion_id;
 
-alter table recipe_ingredients drop constraint if exists fk_recipe_ingredients_recipe;
+alter table if exists recipe_ingredients drop constraint if exists fk_recipe_ingredients_recipe;
 drop index if exists ix_recipe_ingredients_recipe;
 
-alter table recipe_ingredients drop constraint if exists fk_recipe_ingredients_ingredients;
+alter table if exists recipe_ingredients drop constraint if exists fk_recipe_ingredients_ingredients;
 drop index if exists ix_recipe_ingredients_ingredients;
 
-drop table if exists autor;
+drop table if exists autor cascade;
 
-drop table if exists ingredients;
+drop table if exists ingredients cascade;
 
-drop table if exists posicion;
+drop table if exists posicion cascade;
 
-drop table if exists recipe;
+drop table if exists recipe cascade;
 
-drop table if exists recipe_ingredients;
+drop table if exists recipe_ingredients cascade;
 
