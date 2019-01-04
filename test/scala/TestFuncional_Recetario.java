@@ -185,7 +185,7 @@ public class TestFuncional_Recetario extends WithApplication {
     public void validaRequiredEnRecetaFake() {
 
             //https://www.playframework.com/documentation/2.6.x/ScalaTestingWithScalaTest
-            String data = "{\"nombreES\":\"recipe-X" +//deberia validar que no hay nombre de receta (he puesto nombreES)
+            String data = "{\"nombreES\":\"recipe-X" +//deberia validar que no hay nombre de receta (he puesto nombreES) y explicacion
                     " \",\"autor\":{\"nombre\":\"authorFakeName-X" +
                     "\",\"apellidos\": \"salas\"}, " +
                     "\"ingredientes\": [{\"nombre\":\"fakeIngredient-" +
