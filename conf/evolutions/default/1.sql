@@ -35,17 +35,21 @@ create table recipe (
 );
 
 create table recipe_ingredients (
-  id                            bigint auto_increment not null,
-  id_receta                     bigint,
-  id_ingrediente                bigint,
-  cantidad                      integer,
-  constraint pk_recipe_ingredients primary key (id)
+  recipe_id                     bigint not null,
+  ingredients_id                bigint not null,
+  constraint pk_recipe_ingredients primary key (recipe_id,ingredients_id)
 );
 
 create index ix_recipe_autor_id on recipe (autor_id);
 alter table recipe add constraint fk_recipe_autor_id foreign key (autor_id) references autor (id) on delete restrict on update restrict;
 
 alter table recipe add constraint fk_recipe_posicion_id foreign key (posicion_id) references posicion (id) on delete restrict on update restrict;
+
+create index ix_recipe_ingredients_recipe on recipe_ingredients (recipe_id);
+alter table recipe_ingredients add constraint fk_recipe_ingredients_recipe foreign key (recipe_id) references recipe (id) on delete restrict on update restrict;
+
+create index ix_recipe_ingredients_ingredients on recipe_ingredients (ingredients_id);
+alter table recipe_ingredients add constraint fk_recipe_ingredients_ingredients foreign key (ingredients_id) references ingredients (id) on delete restrict on update restrict;
 
 
 # --- !Downs
@@ -54,6 +58,12 @@ alter table recipe drop constraint if exists fk_recipe_autor_id;
 drop index if exists ix_recipe_autor_id;
 
 alter table recipe drop constraint if exists fk_recipe_posicion_id;
+
+alter table recipe_ingredients drop constraint if exists fk_recipe_ingredients_recipe;
+drop index if exists ix_recipe_ingredients_recipe;
+
+alter table recipe_ingredients drop constraint if exists fk_recipe_ingredients_ingredients;
+drop index if exists ix_recipe_ingredients_ingredients;
 
 drop table if exists autor;
 
