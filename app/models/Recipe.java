@@ -33,6 +33,7 @@ public class Recipe extends Model {
 
     //relacion 1 a 1: Una receta tiene una Posicion y solo en una posicion hay una receta (podria ser una columna de receta pero asi creo relacion 1-1)
     @Required
+    @JsonManagedReference
     @OneToOne(cascade = CascadeType.ALL)
     private Posicion posicion;
 

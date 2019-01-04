@@ -1,5 +1,6 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import io.ebean.ExpressionList;
 import io.ebean.Finder;
 import io.ebean.Model;
@@ -14,7 +15,7 @@ public class Posicion extends Model {
     @Id
     private Long id;
 
-
+    @JsonBackReference
     @OneToOne(mappedBy="posicion")
     private Recipe recetaEnPosicion;//pagina del recetario. En una pagina una receta y solo una. Un poco forzada pero queria representar una relacion uno a uno sin usar un campo extra en un tabla :-)
 
