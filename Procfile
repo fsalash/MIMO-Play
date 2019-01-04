@@ -1,2 +1,6 @@
-web: target/universal/stage/bin/mimo-recetas-fsalas -Dhttp.port=${PORT} -Dplay.evolutions.db.default.autoApply=true -Ddb.default.driver=org.postgresql.Driver -Ddb.default.url=postgres://pgqpomdnnihcih:093f812fc4b1c1dd35c5bfa001b8a9d061726ad04b3271b2059e5f2f0787b86b@ec2-54-204-27-31.compute-1.amazonaws.com:5432/dd2ejpo631ufah
+web: target/universal/stage/bin/mimo-recetas-fsalas
+-Dplay.evolutions.db.default.autoApply=true
+-Ddb.default.driver=org.postgresql.Driver
+-Ddb.default.url=postgres://qonthnxljnqnbn:e8851075bcd643f19c2d932a47912fda9ee1e350d0819819c930571e1015b848@ec2-23-21-86-22.compute-1.amazonaws.com:5432/ddhqmcc82qqaic
+
 
