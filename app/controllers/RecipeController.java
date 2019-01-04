@@ -194,6 +194,8 @@ public class RecipeController extends Controller {
                 receta.save(); //almaceno la nueva receta porque si estamos aqui "todo" ha ido bien
 
                 cache.remove("listaRecetas"); //ya no vale la cache para siguientes consultas asi que anulamos
+                cache.remove("listaAutores"); //ya no vale la cache para siguientes consultas asi que anulamos
+                cache.remove("listaIngredientes"); //ya no vale la cache para siguientes consultas asi que anulamos
 
                 //3.-
                 procesaIngredientes(receta);

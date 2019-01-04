@@ -69,8 +69,7 @@ public class TestUnitario_Validacion {
         if(testRecetas.size()>0){
             receta = testRecetas.get(0);}
 
-        assertTrue(receta.getIngredientes().get(0).getNombre().length()<25 &&
-                receta.getIngredientes().get(0).getCantidad() >= 0);
+        assertTrue(receta.getIngredientes().get(0).getNombre().length()<25);
     }
 
     @After

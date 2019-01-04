@@ -148,7 +148,7 @@ public class TestFuncional_Recetario extends WithApplication {
         for (int i =0;i<5;i++){
 
             //https://www.playframework.com/documentation/2.6.x/ScalaTestingWithScalaTest
-            String data = "{\"nombre\":\"recipe-" + i +
+            String data = "{\"nombre\":\"recipe-" + i + "\",\"explicacion\":\"Explicacion receta fake-" + i +
                     " \",\"autor\":{\"nombre\":\"authorFakeName-"+i+
                     "\",\"apellidos\": \"salas\"}, " +
                     "\"ingredientes\": [{\"nombre\":\"fakeIngredient-"+i+

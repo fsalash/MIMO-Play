@@ -1,6 +1,7 @@
 package models;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.ebean.ExpressionList;
 import io.ebean.Finder;
 import io.ebean.Model;
@@ -37,6 +38,7 @@ public class Recipe extends Model {
 
     //relacion N a M: Un ingrediente puede estar en varias recetas y una receta puede tener varios ingredientes
     @Required
+    @JsonManagedReference
     @ManyToMany(cascade = CascadeType.ALL)
     private List<Ingredients> ingredientes;
 

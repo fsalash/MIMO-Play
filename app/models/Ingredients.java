@@ -1,6 +1,7 @@
 package models;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import io.ebean.ExpressionList;
 import io.ebean.Finder;
 import io.ebean.Model;
@@ -17,6 +18,7 @@ public class Ingredients  extends Model {
     @Id
     private Long id;
 
+    @JsonBackReference
     @ManyToMany(mappedBy = "ingredientes")
     private Set<Recipe> recetasIngrediente;
 

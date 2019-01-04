@@ -1,5 +1,6 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import io.ebean.ExpressionList;
 import io.ebean.Finder;
 import io.ebean.Model;
@@ -17,6 +18,7 @@ public class Autor extends Model {
     @Id
     private Long id;
 
+    @JsonBackReference
     @OneToMany(cascade=CascadeType.ALL, mappedBy="autor")
     private List<Recipe> recetasAutor;
 
