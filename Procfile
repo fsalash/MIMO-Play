@@ -1,4 +1,4 @@
-web: target/universal/stage/bin/mimo-recetas-fsalas
+web: target/universal/stage/bin/play-mimo-recetas
 -Dplay.evolutions.db.default.autoApply=true
 -Ddb.default.driver=org.postgresql.Driver
 -Dhttp.port=8080
