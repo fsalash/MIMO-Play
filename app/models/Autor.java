@@ -15,8 +15,10 @@ import java.util.List;
 public class Autor extends Model {
 
     @Id
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "autor")
     private Long id;
+
+    @OneToMany(cascade=CascadeType.ALL, mappedBy="autor")
+    private List<Recipe> recetasAutor;
 
     @Required
     private String nombre;
@@ -67,6 +69,14 @@ public class Autor extends Model {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public List<Recipe> getRecetasAutor() {
+        return recetasAutor;
+    }
+
+    public void setRecetasAutor(List<Recipe> recetasAutor) {
+        this.recetasAutor = recetasAutor;
     }
 
     public String getNombre() {

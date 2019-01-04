@@ -12,8 +12,11 @@ import javax.persistence.OneToOne;
 public class Posicion extends Model {
 
     @Id
+    private Long id;
+
+
     @OneToOne(mappedBy="posicion")
-    private Long idPosicion;//pagina del recetario. En una pagina una receta y solo una. Un poco forzada pero queria representar una relacion uno a uno sin usar un campo extra en un tabla :-)
+    private Recipe recetaEnPosicion;//pagina del recetario. En una pagina una receta y solo una. Un poco forzada pero queria representar una relacion uno a uno sin usar un campo extra en un tabla :-)
 
 
     private String complejidad;
@@ -22,20 +25,20 @@ public class Posicion extends Model {
 
     public static Posicion findPosById(Long idPos){
 
-        ExpressionList<Posicion> query = find.query().where().eq("idPosicion",idPos);
+        ExpressionList<Posicion> query = find.query().where().eq("id",idPos);
         Posicion posicion = query.findOne();
 
         return posicion;
     }
 
-    public Long getIdPosicion() {
+    public Long getId() {
 
-        return idPosicion;
+        return id;
     }
 
-    public void setIdPosicion(Long idPos) {
+    public void setId(Long idPos) {
 
-        this.idPosicion = idPos;
+        this.id = idPos;
     }
 
     public String getComplejidad() {
@@ -44,5 +47,13 @@ public class Posicion extends Model {
 
     public void setComplejidad(String descPosicion) {
         this.complejidad = descPosicion;
+    }
+
+    public Recipe getRecetaEnPosicion() {
+        return recetaEnPosicion;
+    }
+
+    public void setRecetaEnPosicion(Recipe recetaEnPosicion) {
+        this.recetaEnPosicion = recetaEnPosicion;
     }
 }

@@ -221,7 +221,7 @@ public class AutorController extends Controller {
 
     /**
      * Actualizacion del nombre del autor por id
-     * @param nuevo nombre y apellidos del autor
+     * @param new nombre y apellidos del autor
      * @return Json/xml con el resultado de la operacion
      */
     public Result updateAuthor (Long id, String newAuthorName,String newAuthorSurname){
@@ -276,207 +276,7 @@ public class AutorController extends Controller {
 
     }
 
-    /**
-     * Metodo que borra las relaciones n-m guardadas entre idRecete e ingredientes
-     * Al borrar una receta si no eliminamos la relacion entre idReceta e idIngrediente es posible que al crear otra receta el id se "aproveche" y tengamos lios :-)
-     * @param: Recibe el id de la receta en cuestion
-     */
-    private void borraRelacionIngredientesReceta(Long idReceta){
 
-        List<RecipeIngredients> ingredientsByIdRecipe = RecipeIngredients.findIngredientsByIdRecipe(new Long(idReceta));
-
-
-        for(RecipeIngredients ingRec:ingredientsByIdRecipe){
-
-            System.out.println("borrando relacion receta: " + idReceta + " con ingrediente: " + ingRec.getIdIngrediente());
-            ingRec.delete();//borro relacion por si luego el id de la receta eliminada se reutiliza
-        }
-
-    }
-
-
-
-
-    /**
-     * Metodo que se encarga de buscar los ingredientes para cada receta con la relacion n-m que exista asi como su cantidad,
-     * buscar el autor de la receta para cada receta con la relacion 1-n que exista y
-     * se encarga de buscar la dificultad para cada receta con la relacion 1-1 que exista
-     *
-     * @param: Recibe una lista de recetas
-     * @return Lista de recetas de bbdd
-     */
-    private List<Recipe>  buscaInfoRecetas(List<Recipe> listaRecetas){
-
-
-        List<Recipe> listaAux = new ArrayList<Recipe>();
-
-
-        for(int i=0;i<listaRecetas.size();i++){
-
-            List<RecipeIngredients> ingredientsByIdRecipe = new ArrayList<RecipeIngredients>();
-            Posicion posicion = new Posicion();
-            Autor autor = new Autor();
-
-            Recipe recetaBBDD = listaRecetas.get(i);
-            Recipe receta = new Recipe();
-
-           receta.setIdReceta(recetaBBDD.getIdReceta());
-           receta.setNombre(recetaBBDD.getNombre());
-
-
-            //ingredientes
-            ingredientsByIdRecipe = RecipeIngredients.findIngredientsByIdRecipe(recetaBBDD.getIdReceta());
-            List<Ingredients> ingredientes = procesaRelacionIngredientesReceta(ingredientsByIdRecipe);
-            receta.setIngredientes(ingredientes);
-
-
-            //Posicion
-            posicion = Posicion.findPosById(recetaBBDD.getPosicion().getIdPosicion());
-            receta.setPosicion(posicion);
-
-
-            //autor
-            autor = Autor.findAuthorByIDReceta(recetaBBDD.getAutor().getId());
-            receta.setAutor(autor);
-
-
-            listaAux.add(receta);
-        }
-
-        return listaAux;
-
-    }
-
-    /**
-     *  Metodo que procesa los ingredientes de la invocacion y los asocia a la receta validando previamente en bbdd para no repetir ingredientes
-     * @param ingredientsByIdRecipe
-     * @return Lista de relacion de ingredientes usados en una receta
-     */
-    private List<Ingredients> procesaRelacionIngredientesReceta ( List<RecipeIngredients> ingredientsByIdRecipe ){
-
-        List<Ingredients> listaIngredientesADevolver = new ArrayList<>();
-
-        for (int j=0;j<ingredientsByIdRecipe.size();j++){
-
-            RecipeIngredients recIng = ingredientsByIdRecipe.get(j);
-
-            Ingredients ingredientById = Ingredients.findIngredientById(recIng.getIdIngrediente());
-
-            Ingredients ingrediente = new Ingredients();
-
-            //obtengo nombre e id de la tabla "maestra" de ingredientes (relacion n-m)
-            ingrediente.setNombre(ingredientById.getNombre());
-
-            //obtengo cantidad de la tabla "auxiliar" n-m que almacena la cantidad de gramos de cada ingrediente para cada receta
-            ingrediente.setCantidad(recIng.getCantidad());
-
-            ingrediente.setIdIngrediente(recIng.getIdIngrediente());
-            listaIngredientesADevolver.add(ingrediente);
-        }
-
-        return listaIngredientesADevolver;
-    }
-
-
-    /**
-     * Metodo que procesa la entrada por POST para dar de alta los ingredientes de una receta validando si ya existian (el id del ingrediente guardado es el que se usara para la relacion entre receta-ingrediente-cantidad)
-     * @param receta
-     */
-    private void procesaIngredientes(Recipe receta) {
-
-        //recorremos los posibles ingredientes que hubieran pasado en la llamada
-        List<Ingredients> ingredientes = receta.getIngredientes();
-
-
-        for(int i=0;i<ingredientes.size();i++){
-
-            Ingredients ingrediente = ingredientes.get(i);
-
-
-            Ingredients ingredienteGuardado = Ingredients.findIngredientByName(ingrediente.getNombre());//busco si el ingrediente de esta receta ya existe de anteriores
-            RecipeIngredients recipeIngredients = new RecipeIngredients();//esto me sirve para guardar la relacion n-m de recetas con ingredientes
-
-            if(ingredienteGuardado!=null){
-
-                //existe el ingrediente en bbdd entonces lo asocio a la receta
-                recipeIngredients.setIdIngrediente(ingredienteGuardado.getIdIngrediente());
-
-
-            }
-            else{
-                //el ingrediente no existia en bbdd de ejecuciones anteriores y lo almaceno como ingrediente nuevo
-
-                ingrediente.save();
-                recipeIngredients.setIdIngrediente(ingrediente.getIdIngrediente());
-
-            }
-
-
-            recipeIngredients.setCantidad(ingrediente.getCantidad());//esto siempre lo cojo de la request porque para cada receta la cantidad podria ser diferente
-
-            recipeIngredients.setIdReceta(receta.getIdReceta()); //guardo relacion con receta antes de persistir relacion receta-cliente (N-M)
-
-            recipeIngredients.save();//guardo relacion n-m recetas con ingredientes
-
-        }
-
-    }
-
-
-    /**
-     * Metodo que procesa la entrada por POST para dar de alta el autor de una receta validando si ya existia en bbdd previamente
-     * @param receta
-     */
-    private void procesaAutor(Recipe receta){
-
-        Autor autor= receta.getAutor(); //Una receta tiene un autor y un autor varias receatas 1-n
-
-
-        Autor autorAlmacenado = Autor.findAuthorByNameAndSurname(autor.getNombre(), autor.getApellidos());
-
-        if(autorAlmacenado !=null){
-
-           receta.setAutor(autorAlmacenado);//guardamos relacion 1-n de autores con receta (una receta solo es de un autor, y un autor tiene n recetas
-        }
-        else{
-
-            autor.save();
-            receta.setAutor(autor); //idem guardamos la relacion entre autor nuevo y la receta creada
-        }
-
-
-
- }
-
-    /**
-     * Metodo que procesa la entrada por POST para dar de alta la posicion de una receta validando si ya existe una receta en una posicion del recetario
-     * (es un "poco" forzada esta relacion porque se podria hacer mas facil usando un campo en la tabla recipe, pero para completar el ejercicio creo una relacion OneToOne)
-     * @param receta
-     */
-    private int procesaPosicion(Recipe receta){
-
-        Posicion posicion = receta.getPosicion();
-
-
-        Posicion difInBBDD = Posicion.findPosById(posicion.getIdPosicion());
-
-        if (difInBBDD!=null){
-
-            //ya existe una receta en esa posicion. Violamos la relacion 1 a 1 y por tanto retornamos
-            return -1;
-        }
-        else{
-
-            posicion.setIdPosicion(posicion.getIdPosicion());
-            posicion.save();
-            receta.setPosicion(posicion);//guardamos relacion uno a uno entre posicion de nueva creacion y receta
-
-        }
-
-
-        return 0;
-
-    }
 
 
     /**
@@ -583,26 +383,13 @@ public class AutorController extends Controller {
             Random rand = new Random();
 
             int n = rand.nextInt(5000) + 1;
-            posicion.setIdPosicion(new Long(n));
+            posicion.setId(new Long(n));
             receta.setComplejidad("DIFICIL");
 
             receta.setPosicion(posicion);
             receta.setNombre("recetaFake-" + i);
 
 
-
-            for (int k = 0; k < receta.getIngredientes().size(); k++) {
-
-                RecipeIngredients recIng = new RecipeIngredients();
-
-                Ingredients ingrediente = receta.getIngredientes().get(k);
-
-                recIng.setIdIngrediente(ingrediente.getIdIngrediente());
-                recIng.setIdReceta(receta.getIdReceta());
-                recIng.setCantidad(i);
-                // recIng.save();
-
-            }
 
             Autor autor = new Autor();
             autor.setApellidos("fakeSurname");

@@ -9,25 +9,19 @@ import play.data.validation.Constraints.Required;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Ingredients  extends Model {
 
     @Id
-  //  private Long id;
-    @ManyToMany(cascade = CascadeType.ALL)
-    private Long idIngrediente;
+    private Long id;
+
+    @ManyToMany(mappedBy = "ingredientes")
+    private Set<Recipe> recetasIngrediente;
 
     @Required
     private String nombre;
-
-    //https://stackoverflow.com/questions/11236806/ebean-how-to-exclude-string-as-column
-    //lo marco como transient porque no quiero que el valor de cantidad para el ingrediente se almacene en el propio ingrediente
-    //lo controlaré mediante validacion adHoc en el parseo de la request y almacenaré el valor en la relacion de receta-ingrediente&cantidad
-
-    @Transient
-    @JsonIgnore
-    private int cantidad;//en gramos
 
 
     public static final Finder<Long,Ingredients> find = new Finder<>(Ingredients.class);
@@ -42,7 +36,7 @@ public class Ingredients  extends Model {
 
     public static Ingredients findIngredientById (Long id){
 
-        ExpressionList<Ingredients> query = find.query().where().eq("idIngrediente",id);
+        ExpressionList<Ingredients> query = find.query().where().eq("id",id);
         Ingredients ingrediente = query.findOne();
 
         return ingrediente;
@@ -66,23 +60,22 @@ public class Ingredients  extends Model {
         this.nombre = nombre;
     }
 
-    public Long getIdIngrediente() {
+    public Long getId() {
 
-        return idIngrediente;
+        return id;
     }
 
-    public void setIdIngrediente(Long idIngrediente) {
+    public void setId(Long idIngrediente) {
 
-        this.idIngrediente = idIngrediente;
+        this.id = idIngrediente;
     }
 
-    public int getCantidad() {
 
-        return cantidad;
+    public Set<Recipe> getRecetasIngrediente() {
+        return recetasIngrediente;
     }
 
-    public void setCantidad(int cantidad) {
-
-        this.cantidad = cantidad;
+    public void setRecetasIngrediente(Set<Recipe> recetasIngrediente) {
+        this.recetasIngrediente = recetasIngrediente;
     }
 }

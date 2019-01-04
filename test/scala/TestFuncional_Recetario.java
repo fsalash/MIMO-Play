@@ -59,9 +59,9 @@ public class TestFuncional_Recetario extends WithApplication {
         ingrediente.save();
 
 
-        System.out.println("ingrediente guardado--> " + ingrediente.getNombre()+","+ ingrediente.getIdIngrediente());
+        System.out.println("ingrediente guardado--> " + ingrediente.getNombre()+","+ ingrediente.getId());
 
-        Ingredients ingredientById = ingrediente.findIngredientById(ingrediente.getIdIngrediente());
+        Ingredients ingredientById = ingrediente.findIngredientById(ingrediente.getId());
 
         assertNotNull(ingredientById);
 

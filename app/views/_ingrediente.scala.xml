@@ -1,5 +1,5 @@
 @(ingrediente:Ingredients)
 <ingrediente>
-    <id> @ingrediente.getIdIngrediente()</id>
+    <id> @ingrediente.getId()</id>
    <nombre> @ingrediente.getNombre()</nombre>
 </ingrediente>
