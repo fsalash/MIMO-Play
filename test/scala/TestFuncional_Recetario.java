@@ -114,7 +114,10 @@ public class TestFuncional_Recetario extends WithApplication {
             //https://stackoverflow.com/questions/10890381/test-multipartformdata-in-play-2-0-fakerequest/28130543
             Map<String,String> data = new HashMap<String, String>();
 
-            data.put("nombre", "ingredientFakeName-"+i);
+            data.put("nombre", "ingredientFakeName-"+i
+                    );
+            data.put("cantidad", "3"+i
+            );
 
 
             Http.RequestBuilder req = (Http.RequestBuilder) Helpers.fakeRequest().

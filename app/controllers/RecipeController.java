@@ -82,16 +82,16 @@ public class RecipeController extends Controller {
         }
 
 
-        List<Recipe> listaRecetasCompleta  = buscaInfoRecetas(listaRecetas);
+        buscaInfoRecetas(listaRecetas);
 
-        System.out.println("Tamaño del recetario--> " + listaRecetasCompleta.size() + " recetas guardadas");
+        System.out.println("Tamaño del recetario--> " + listaRecetas.size() + " recetas guardadas");
 
 
         if(flagResponse.equals(XML)){
 
             System.out.println("type xml");
             //fakeReceta(); //codigo de prueba que genera recetas
-            return ok(recetas.render(listaRecetasCompleta));
+            return ok(recetas.render(listaRecetas));
         }
         else{
 
@@ -99,7 +99,7 @@ public class RecipeController extends Controller {
 
                 System.out.println("type json");
                 //fakeReceta(); //codigo de prueba que genera recetas
-                JsonNode jsonNodeListaRecetas = Json.toJson(listaRecetasCompleta);
+                JsonNode jsonNodeListaRecetas = Json.toJson(listaRecetas);
                 return ok(jsonNodeListaRecetas);
 
             }
@@ -177,7 +177,7 @@ public class RecipeController extends Controller {
 
                 if(!validaCantidadesIngredientes(receta.getIngredientes())){
 
-                    return ok(views.html.ingredienteErr.render(messages));
+                    return ok(views.html.ingredienteErrCantidad.render(messages));
                 }
 
 
@@ -191,14 +191,14 @@ public class RecipeController extends Controller {
                 //2.-
                 procesaAutor(receta);
 
+                //3.-
+                procesaIngredientes(receta);
+
                 receta.save(); //almaceno la nueva receta porque si estamos aqui "todo" ha ido bien
 
                 cache.remove("listaRecetas"); //ya no vale la cache para siguientes consultas asi que anulamos
                 cache.remove("listaAutores"); //ya no vale la cache para siguientes consultas asi que anulamos
                 cache.remove("listaIngredientes"); //ya no vale la cache para siguientes consultas asi que anulamos
-
-                //3.-
-                procesaIngredientes(receta);
 
                 switch (flagResponse){ //revisamos como acepta la respuesta el cliente
 
@@ -303,15 +303,15 @@ public class RecipeController extends Controller {
      */
     private boolean validaCantidadesIngredientes(List<Ingredients> listaIngredientes){
 
-        /*
+
         for(Ingredients ingrediente: listaIngredientes ){
 
-            if(ingrediente.getCantidad() == 0)
+            if(ingrediente.getCantidad() > 0 && ingrediente.getCantidad() > 1000 )
 
                 return false;
 
         }
-*/
+
         return true;
     }
 
@@ -328,9 +328,9 @@ public class RecipeController extends Controller {
 
 
         //validacion del autor
-       // if(receta.getAutor()!=null && receta.getAutor().getNombre() != null && receta.getAutor().getApellidos()!=null && (receta.getAutor().getNombre().length()>30 || receta.getAutor().getApellidos().length()> 30)) {
-        //    flagErrorValidacion = flagErrorValidacion -1 ;
-        //}
+       if(receta.getAutor()!=null && receta.getAutor().getNombre() != null && receta.getAutor().getApellidos()!=null && (receta.getAutor().getNombre().length()>30 || receta.getAutor().getApellidos().length()> 30)) {
+            flagErrorValidacion = flagErrorValidacion -1 ;
+        }
 
 
         // validacion ingredientes
@@ -380,26 +380,19 @@ public class RecipeController extends Controller {
      * se encarga de buscar la dificultad para cada receta con la relacion 1-1 que exista
      *
      * @param: Recibe una lista de recetas
-     * @return Lista de recetas de bbdd
+     *
      */
-    private List<Recipe>  buscaInfoRecetas(List<Recipe> listaRecetas){
-
-
-        List<Recipe> listaAux = new ArrayList<Recipe>();
+    private void buscaInfoRecetas(List<Recipe> listaRecetas){
 
 
         for(int i=0;i<listaRecetas.size();i++){
 
-            List<Ingredients> ingredientsByIdRecipe = listaRecetas.get(i).getIngredientes();
+            Recipe receta =  listaRecetas.get(i);
+
+            List<Ingredients> ingredientsByIdRecipe = receta.getIngredientes();
+
             Posicion posicion = new Posicion();
             Autor autor = new Autor();
-
-            Recipe recetaBBDD = listaRecetas.get(i);
-            Recipe receta = new Recipe();
-
-           receta.setId(recetaBBDD.getId());
-           receta.setNombre(recetaBBDD.getNombre());
-
 
             //ingredientes
             //ingredientsByIdRecipe = RecipeIngredients.findIngredientsByIdRecipe(recetaBBDD.getId());
@@ -408,20 +401,15 @@ public class RecipeController extends Controller {
 
 
             //Posicion
-            posicion = Posicion.findPosById(recetaBBDD.getPosicion().getId());
+            posicion = Posicion.findPosById(receta.getPosicion().getId());
             receta.setPosicion(posicion);
 
 
             //autor
-            autor = Autor.findAuthorById(recetaBBDD.getId());
-            receta.setId(autor.getId());
+            autor = Autor.findAuthorById(receta.getAutor().getId());
             receta.setAutor(autor);
 
-
-            listaAux.add(receta);
         }
-
-        return listaAux;
 
     }
 
@@ -444,9 +432,9 @@ public class RecipeController extends Controller {
 
             //obtengo nombre e id de la tabla "maestra" de ingredientes (relacion n-m)
             ingrediente.setNombre(ingredientById.getNombre());
-
-
             ingrediente.setId(recIng.getId());
+            ingrediente.setCantidad(recIng.getCantidad());
+
             listaIngredientesADevolver.add(ingrediente);
         }
 
@@ -455,7 +443,7 @@ public class RecipeController extends Controller {
 
 
     /**
-     * Metodo que procesa la entrada por POST para dar de alta los ingredientes de una receta validando si ya existian (el id del ingrediente guardado es el que se usara para la relacion entre receta-ingrediente-cantidad)
+     * Metodo que procesa la entrada por POST para dar de alta los ingredientes de una receta (el id del ingrediente guardado es el que se usara para la relacion entre receta-ingrediente)
      * @param receta
      */
     private void procesaIngredientes(Recipe receta) {
@@ -469,27 +457,12 @@ public class RecipeController extends Controller {
 
             Ingredients ingrediente = ingredientes.get(i);
 
-
-            Ingredients ingredienteGuardado = Ingredients.findIngredientByName(ingrediente.getNombre());//busco si el ingrediente de esta receta ya existe de anteriores
-            //RecipeIngredients recipeIngredients = new RecipeIngredients();//esto me sirve para guardar la relacion n-m de recetas con ingredientes
-
-            if(ingredienteGuardado!=null){
-
-                //existe el ingrediente en bbdd entonces lo asocio a la receta
-                auxIngredientes.add(ingredienteGuardado);
-
-
-            }
-            else{
-                //el ingrediente no existia en bbdd de ejecuciones anteriores y lo almaceno como ingrediente nuevo
-
+                //guardo ingrediente con cantidad que se relacionara con una receta
                 ingrediente.save();
                 auxIngredientes.add(ingrediente);
 
             }
 
-
-        }
 
         receta.setIngredientes(auxIngredientes);
 
@@ -509,14 +482,12 @@ public class RecipeController extends Controller {
 
            //guardamos relacion 1-n de autores con receta (una receta solo es de un autor, y un autor tiene n recetas
            receta.setAutor(autorAlmacenado);
-           receta.setId(autorAlmacenado.getId());
+
         }
         else{ //se debe crear el nuevo autor para la receta
 
             Autor autorEnPost = receta.getAutor();
-
             autorEnPost.save();
-            receta.setId(autorEnPost.getId()); //idem guardamos la relacion entre autor nuevo y la receta creada
             receta.setAutor(autorEnPost);
         }
 

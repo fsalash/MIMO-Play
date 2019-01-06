@@ -40,6 +40,7 @@ elIngredienteConID = El ingrediente con id
 haSidoBorradoDeBBDD = ha sido borrado de bbdd
 ingredienteActualizado = Ingrediente Actualizado
 ingredienteEnUso = El ingrediente está en uso y no puede ser borrado
+cantidadIngredienteNoPermitida = La cantidad de un ingrediente no puede ser superior a 1000
 
 autor-1FlagValidacion = Longitud del nombre/apellidos de autor excesiva
 autorRepetido = Autor repetido

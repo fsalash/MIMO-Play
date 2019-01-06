@@ -38,6 +38,7 @@ elIngredienteConID = The ingredient with id
 haSidoBorradoDeBBDD = has been deleted from bbdd
 ingredienteActualizado = Ingredient updated
 ingredienteEnUso = Ingredient is in used and it can´t be deleted
+cantidadIngredienteNoPermitida = The ingredient weigth can´t be greather than 1000
 
 autor-1FlagValidacion = Author name/surname  exceeded maxixum length
 autorRepetido = Autor repeated

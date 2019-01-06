@@ -25,6 +25,9 @@ public class Ingredients  extends Model {
     @Required
     private String nombre;
 
+    @Required
+    private Long cantidad;
+
 
     public static final Finder<Long,Ingredients> find = new Finder<>(Ingredients.class);
 
@@ -79,5 +82,13 @@ public class Ingredients  extends Model {
 
     public void setRecetasIngrediente(Set<Recipe> recetasIngrediente) {
         this.recetasIngrediente = recetasIngrediente;
+    }
+
+    public Long getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(Long cantidad) {
+        this.cantidad = cantidad;
     }
 }
