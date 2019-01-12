@@ -15,6 +15,8 @@ public class Posicion extends Model {
     @Id
     private Long id;
 
+    private String descPosicion;
+
     @JsonBackReference
     @OneToOne(mappedBy="posicion")
     private Recipe recetaEnPosicion;//pagina del recetario. En una pagina una receta y solo una. Un poco forzada pero queria representar una relacion uno a uno sin usar un campo extra en un tabla :-)
@@ -47,5 +49,13 @@ public class Posicion extends Model {
 
     public void setRecetaEnPosicion(Recipe recetaEnPosicion) {
         this.recetaEnPosicion = recetaEnPosicion;
+    }
+
+    public String getDescPosicion() {
+        return descPosicion;
+    }
+
+    public void setDescPosicion(String descPosicion) {
+        this.descPosicion = descPosicion;
     }
 }

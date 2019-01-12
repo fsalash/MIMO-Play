@@ -20,6 +20,7 @@ create table ingredients (
 
 create table posicion (
   id                            bigint auto_increment not null,
+  desc_posicion                 varchar(255),
   constraint pk_posicion primary key (id)
 );
 

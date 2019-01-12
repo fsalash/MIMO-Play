@@ -491,8 +491,10 @@ public class RecipeController extends Controller {
         }
         else{
 
-            posicion.setId(posicion.getId());
+            posicion.setId(posicion.getId());//la posicion indicada por post en la invocacion (pagina donde quieres que te pongan la receta)
+            posicion.setDescPosicion("pagina-" + posicion.getId());
             posicion.save();
+
             receta.setPosicion(posicion);//guardamos relacion uno a uno entre posicion de nueva creacion y receta
 
         }

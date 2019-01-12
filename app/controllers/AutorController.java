@@ -202,7 +202,7 @@ public class AutorController extends Controller {
 
             if(relacionesRecetaAutor.size()==0) {
                 autorById.delete();
-                cache.remove("listaIngredientes"); //ya no vale la cache para siguientes consultas asi que anulamos
+                cache.remove("listaAutores"); //ya no vale la cache para siguientes consultas asi que anulamos
                 return ok(views.html.autorBorrado.render(autorById,messages));
             }
             else {
