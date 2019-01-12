@@ -67,7 +67,7 @@ public class RecipeController extends Controller {
         chequeaCabeceraRequest(request());
 
 
-        //buscamos todas las recetas en bbdd y sus relaciones con los ingredientes (todo en un paso)
+        //buscamos todas las recetas y sus relaciones con los ingredientes (todo en un paso). Si está en cache ok, si no la buscamos en bbdd
 
         List<Recipe> listaEnCache = cache.get("listaRecetas");
 
@@ -129,9 +129,10 @@ public class RecipeController extends Controller {
 
             /*Para poder dar de alta una nueva receta se debe cumplir que:
 
-                1.- Existan los ingredientes a usar (si no existen se crean nuevos)
-                2.- Exista una dificultad definida (si no existe se crea nueva)
-                3.- Exista un autor de la receta (si no existe se crea nuevo)
+
+                1.- Exista una posicion libre (si no existe se crea nueva)
+                2.- Exista un autor de la receta (si no existe se crea nuevo)
+                3.- Existan los ingredientes a usar (si no existen se crean nuevos)
 
                 Por esto lo primera es usar finders para ver si en bbdd tenemos valores ya guardados
             */
@@ -196,9 +197,9 @@ public class RecipeController extends Controller {
 
                 receta.save(); //almaceno la nueva receta porque si estamos aqui "todo" ha ido bien
 
-                cache.remove("listaRecetas"); //ya no vale la cache para siguientes consultas asi que anulamos
-                cache.remove("listaAutores"); //ya no vale la cache para siguientes consultas asi que anulamos
-                cache.remove("listaIngredientes"); //ya no vale la cache para siguientes consultas asi que anulamos
+                cache.remove("listaRecetas"); //ya no vale la cache de recetas para siguientes consultas asi que anulamos
+                cache.remove("listaAutores"); //ya no vale la cache de autores para siguientes consultas asi que anulamos
+                cache.remove("listaIngredientes"); //ya no vale la cache de ingredientes para siguientes consultas asi que anulamos
 
                 switch (flagResponse){ //revisamos como acepta la respuesta el cliente
 
@@ -243,11 +244,10 @@ public class RecipeController extends Controller {
 
         chequeaCabeceraRequest(request());
 
-
         Recipe recipeById = Recipe.findRecipeById(id);
+
         if(recipeById!=null){
             System.out.println("Borrado correcto: " + recipeById.getId() + " // " + recipeById.getNombre());
-            borraRelacionIngredientesReceta(id);
             recipeById.delete();
             cache.remove("listaRecetas"); //ya no vale la cache para siguientes consultas asi que anulamos
             return ok(views.html.recetaBorrada.render(recipeById,messages));
@@ -351,33 +351,11 @@ public class RecipeController extends Controller {
 
     }
 
-    /**
-     * Metodo que borra las relaciones n-m guardadas entre idRecete e ingredientes
-     * Al borrar una receta si no eliminamos la relacion entre idReceta e idIngrediente es posible que al crear otra receta el id se "aproveche" y tengamos lios :-)
-     * @param: Recibe el id de la receta en cuestion
-     */
-    private void borraRelacionIngredientesReceta(Long idReceta){
-
-        /*
-        List<RecipeIngredients> ingredientsByIdRecipe = RecipeIngredients.findIngredientsByIdRecipe(new Long(idReceta));
-
-
-        for(RecipeIngredients ingRec:ingredientsByIdRecipe){
-
-            System.out.println("borrando relacion receta: " + idReceta + " con ingrediente: " + ingRec.getIdIngrediente());
-            ingRec.delete();//borro relacion por si luego el id de la receta eliminada se reutiliza
-        }
-        */
-
-    }
-
-
-
 
     /**
      * Metodo que se encarga de buscar los ingredientes para cada receta con la relacion n-m que exista asi como su cantidad,
      * buscar el autor de la receta para cada receta con la relacion 1-n que exista y
-     * se encarga de buscar la dificultad para cada receta con la relacion 1-1 que exista
+     * se encarga de buscar la posicion para cada receta con la relacion 1-1 que exista
      *
      * @param: Recibe una lista de recetas
      *
@@ -395,7 +373,6 @@ public class RecipeController extends Controller {
             Autor autor = new Autor();
 
             //ingredientes
-            //ingredientsByIdRecipe = RecipeIngredients.findIngredientsByIdRecipe(recetaBBDD.getId());
             List<Ingredients> ingredientes = procesaRelacionIngredientesReceta(ingredientsByIdRecipe);
             receta.setIngredientes(ingredientes);
 
@@ -414,7 +391,7 @@ public class RecipeController extends Controller {
     }
 
     /**
-     *  Metodo que procesa los ingredientes de la invocacion y los asocia a la receta validando previamente en bbdd para no repetir ingredientes
+     *  Metodo que procesa los ingredientes de la invocacion y los asocia a la receta con la cantidad indicada para cada receta
      * @param ingredientsByIdRecipe
      * @return Lista de relacion de ingredientes usados en una receta
      */

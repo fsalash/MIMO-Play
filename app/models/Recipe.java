@@ -28,6 +28,7 @@ public class Recipe extends Model {
 
     //relacion 1 a N: Una receta tiene un autor y un autor varias recetas
     @Required
+    @JsonManagedReference
     @ManyToOne
     private Autor autor;
 
